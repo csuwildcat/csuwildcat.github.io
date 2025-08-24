@@ -1,6 +1,7 @@
 ---
 title: 'Scaling Decentralized Apps & Services via Blockchain-based Identity Indirection'
 pubDatetime: 2016-07-12T21:02:52Z
+featured: true
 author: 'Daniel Buchner'
 tags:
   - blockchain

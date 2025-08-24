@@ -1,6 +1,7 @@
 ---
 title: 'Identity Is the Dark Matter & Energy of Our World'
 pubDatetime: 2018-01-25T17:44:20Z
+featured: true
 author: 'Daniel Buchner'
 tags:
   - identity

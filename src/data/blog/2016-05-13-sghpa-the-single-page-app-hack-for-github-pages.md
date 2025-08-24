@@ -1,6 +1,7 @@
 ---
 title: 'S(GH)PA: The Single-Page App Hack for GitHub Pages'
 pubDatetime: 2016-05-13T14:41:28Z
+featured: true
 author: 'Daniel Buchner'
 tags:
   - GitHub Pages
