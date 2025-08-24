@@ -1,0 +1,259 @@
+<!-- Image zoom overlay -->
+<div id="image-zoom-overlay" class="image-zoom-overlay">
+  <img id="zoomed-image" class="zoomed-image" />
+</div>
+
+<script is:inline>
+  (function() {
+    let currentAnimation = null;
+    let currentOriginalImage = null;
+    let currentPosition = { left: 0, top: 0, width: 0, height: 0 };
+
+    // Utility functions for JIT element access
+    const getOverlay = () => document.getElementById('image-zoom-overlay');
+    const getZoomedImage = () => document.getElementById('zoomed-image');
+
+    function resetZoomedImage() {
+      const zoomedImage = getZoomedImage();
+      if (!zoomedImage) return;
+      
+      zoomedImage.classList.remove('visible');
+      zoomedImage.style.transform = '';
+      zoomedImage.style.left = '';
+      zoomedImage.style.top = '';
+      zoomedImage.style.width = '';
+      zoomedImage.style.height = '';
+      currentPosition = { left: 0, top: 0, width: 0, height: 0 };
+    }
+
+    function handleImageClick(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      if (currentAnimation) return;
+      
+      const overlay = getOverlay();
+      const zoomedImage = getZoomedImage();
+      if (!overlay || !zoomedImage) return;
+      
+      const img = event.target;
+      currentOriginalImage = img;
+      
+      // Reset state
+      resetZoomedImage();
+      
+      // Get original image position
+      const rect = img.getBoundingClientRect();
+      
+      // Set up zoomed image
+      zoomedImage.src = img.src;
+      zoomedImage.alt = img.alt || '';
+      
+      // Position at original location
+      zoomedImage.style.left = rect.left + 'px';
+      zoomedImage.style.top = rect.top + 'px';
+      zoomedImage.style.width = rect.width + 'px';
+      zoomedImage.style.height = rect.height + 'px';
+      
+      // Show overlay and image
+      overlay.classList.add('active');
+      zoomedImage.classList.add('visible');
+      
+      // Calculate target dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const maxWidth = viewportWidth * 0.95;
+      const maxHeight = viewportHeight * 0.95;
+      
+      // Load image to get natural dimensions
+      const tempImg = new Image();
+      tempImg.onload = function() {
+        const aspectRatio = this.naturalWidth / this.naturalHeight;
+        let newWidth, newHeight;
+        
+        if (this.naturalWidth > this.naturalHeight) {
+          newWidth = Math.min(maxWidth, this.naturalWidth);
+          newHeight = newWidth / aspectRatio;
+          
+          if (newHeight > maxHeight) {
+            newHeight = maxHeight;
+            newWidth = newHeight * aspectRatio;
+          }
+        } else {
+          newHeight = Math.min(maxHeight, this.naturalHeight);
+          newWidth = newHeight * aspectRatio;
+          
+          if (newWidth > maxWidth) {
+            newWidth = maxWidth;
+            newHeight = newWidth / aspectRatio;
+          }
+        }
+        
+        const centerX = (viewportWidth - newWidth) / 2;
+        const centerY = (viewportHeight - newHeight) / 2;
+        
+        // Store the final position for closing animation
+        currentPosition = {
+          left: centerX,
+          top: centerY,
+          width: newWidth,
+          height: newHeight
+        };
+        
+        // Animate to center
+        currentAnimation = zoomedImage.animate([
+          {
+            left: rect.left + 'px',
+            top: rect.top + 'px',
+            width: rect.width + 'px',
+            height: rect.height + 'px'
+          },
+          {
+            left: centerX + 'px',
+            top: centerY + 'px',
+            width: newWidth + 'px',
+            height: newHeight + 'px'
+          }
+        ], {
+          duration: 300,
+          easing: 'ease-out',
+          fill: 'forwards'
+        });
+        
+        // Animate overlay opacity
+        overlay.animate([
+          { opacity: 0 },
+          { opacity: 1 }
+        ], {
+          duration: 300,
+          easing: 'ease-out',
+          fill: 'forwards'
+        });
+        
+        currentAnimation.addEventListener('finish', () => {
+          currentAnimation = null;
+        });
+      };
+      tempImg.src = img.src;
+    }
+
+    function closeZoom() {
+      if (currentAnimation || !currentOriginalImage) return;
+      
+      const overlay = getOverlay();
+      const zoomedImage = getZoomedImage();
+      if (!overlay || !zoomedImage) return;
+      
+      // Get current original image position
+      const rect = currentOriginalImage.getBoundingClientRect();
+      
+      // Animate back to original position using stored position
+      const animationOptions = {
+        duration: 300,
+        easing: 'ease-out',
+        fill: 'forwards'
+      };
+      currentAnimation = zoomedImage.animate([
+        {
+          left: currentPosition.left + 'px',
+          top: currentPosition.top + 'px',
+          width: currentPosition.width + 'px',
+          height: currentPosition.height + 'px'
+        },
+        {
+          left: rect.left + 'px',
+          top: rect.top + 'px',
+          width: rect.width + 'px',
+          height: rect.height + 'px'
+        }
+      ], animationOptions);
+      
+      overlay.animate([
+        { opacity: 1 },
+        { opacity: 0 }
+      ], animationOptions);
+      
+      currentAnimation.addEventListener('finish', () => {
+        overlay.classList.remove('active');
+        resetZoomedImage();
+        currentOriginalImage = null;
+        currentAnimation = null;
+      });
+    }
+
+    // Top-level delegated event listeners - no DOM ready waiting needed
+    document.addEventListener('click', function(event) {
+      if (currentAnimation) return;
+      
+      const zoomedImage = getZoomedImage();
+      const overlay = getOverlay();
+      
+      // Handle image clicks to zoom (exclude the zoomed image itself)
+      if (event.target.tagName === 'IMG' && event.target !== zoomedImage) {
+        handleImageClick(event);
+        return;
+      }
+      
+      // Handle overlay clicks to close
+      if (event.target === overlay || event.target === zoomedImage) {
+        closeZoom();
+      }
+    });
+
+    // Close zoom with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const overlay = getOverlay();
+        if (overlay?.classList.contains('active')) {
+          closeZoom();
+        }
+      }
+    });
+  })();
+</script>
+
+<style>
+  /* Image zoom styles */
+  .image-zoom-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    cursor: pointer;
+  }
+
+  .image-zoom-overlay.active {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .zoomed-image {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    cursor: pointer;
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .zoomed-image.visible {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Make all images clickable */
+  :global(img) {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+</style>
