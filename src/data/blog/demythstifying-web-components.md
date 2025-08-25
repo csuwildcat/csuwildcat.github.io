@@ -62,6 +62,8 @@ var foo = document.createElement('x-foo');
 foo.bar = 1;
 ```
 
-Whether or not JSX is already written to detect and reflect data to Web Components via setters/methods is immaterial - the point is: it should be trivial to detect a Custom Element token in the JSX parser and pass data to its corresponding instance. I have inquired about where in the React/JSX lib code this data relay takes place, and I am willing to help modify the code so Web Components can be seamlessly included. ## Myth Status: BUSTED
+Whether or not JSX is already written to detect and reflect data to Web Components via setters/methods is immaterial - the point is: it should be trivial to detect a Custom Element token in the JSX parser and pass data to its corresponding instance. I have inquired about where in the React/JSX lib code this data relay takes place, and I am willing to help modify the code so Web Components can be seamlessly included.
+
+## Myth Status: BUSTED
 
 So now that we've got all that straight, I encourage you to never utter these myths again.

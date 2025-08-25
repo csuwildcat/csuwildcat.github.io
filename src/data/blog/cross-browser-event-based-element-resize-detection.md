@@ -11,11 +11,17 @@ tags:
 description: A cross-browser solution for detecting element resize events using hidden object elements, enabling responsive behavior beyond window resize events.
 ---
 
-**UPDATE:** This post has seen a significant change from the first version of the code. It now relies on a much simpler method: a hidden `object` element that relays its resize event to your listeners. ## DOM Elements! Y U No Resize Event?
+**UPDATE:** This post has seen a significant change from the first version of the code. It now relies on a much simpler method: a hidden `object` element that relays its resize event to your listeners.
 
-During your coding adventures, you may have run into occasions where you wanted to know when an element in your document changed dimensions - basically the window resize event, but on regular elements. Element size changes can occur for many reasons: modifications to CSS width, height, padding, as a response to changes to a parent element's size, and many more. Before today, you probably thought this was mere unicorn lore, an impossible feat - well buckle up folks, we're about to throw down the gauntlet. ## Eye of Newt, and Toe of Frog
+## DOM Elements! Y U No Resize Event?
 
-The following is the script provides two methods that take care of everything. To enable our resize listening magic, we inject an object element into the target element, set a list of special styles to hide it from view, and monitor it for resize - it acts as a trigger for alerting us when the target element parent is resized. The first method the script provides is `addResizeListener`, it manages all your listeners and monitors the element for resize using the injected `object` element. The other method is `removeResizeListener`, and it ensures that your listeners are properly detached when you want them removed. ```javascript
+During your coding adventures, you may have run into occasions where you wanted to know when an element in your document changed dimensions - basically the window resize event, but on regular elements. Element size changes can occur for many reasons: modifications to CSS width, height, padding, as a response to changes to a parent element's size, and many more. Before today, you probably thought this was mere unicorn lore, an impossible feat - well buckle up folks, we're about to throw down the gauntlet.
+
+## Eye of Newt, and Toe of Frog
+
+The following is the script provides two methods that take care of everything. To enable our resize listening magic, we inject an object element into the target element, set a list of special styles to hide it from view, and monitor it for resize - it acts as a trigger for alerting us when the target element parent is resized. The first method the script provides is `addResizeListener`, it manages all your listeners and monitors the element for resize using the injected `object` element. The other method is `removeResizeListener`, and it ensures that your listeners are properly detached when you want them removed.
+
+```javascript
 (function(){
   var attachEvent = document.attachEvent;
   var isIE = navigator.userAgent.match(/Trident/);
@@ -85,7 +91,9 @@ The following is the script provides two methods that take care of everything. T
 
 ## Demo-licious!
 
-Here's a pseudo code usage of the method. ```javascript
+Here's a pseudo code usage of the method.
+
+```javascript
 var myElement = document.getElementById('my_element'),
     myResizeFn = function(){
         /* do something on resize */

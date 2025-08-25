@@ -22,7 +22,8 @@ Element.implement('vertical', function(){
         'white-space': 'pre-line'
     }).set('text', this.get('text').split('').join('\n'));  
 });
-
 ```
 
- As you can see, the CSS is rather simple, and the modification to the elements text content is quite benign (extreme corner cases aside). In case the output is hard to visualize, here is a jsFiddle example so you can see it in action: <iframe src="http://jsfiddle.net/9QhjL/14/embedded/?clickable=true" style="width: 100%; height: 300px"></iframe>
+As you can see, the CSS is rather simple, and the modification to the elements text content is quite benign (extreme corner cases aside). In case the output is hard to visualize, here is a jsFiddle example so you can see it in action:
+ 
+<iframe src="http://jsfiddle.net/9QhjL/14/embedded/?clickable=true" style="width: 100%; height: 300px"></iframe>

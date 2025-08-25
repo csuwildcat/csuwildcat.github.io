@@ -12,8 +12,7 @@ description: A minimal CSS snippet using pseudo-elements to create UI ribbons th
 
 I thought I'd jot down a snippet of CSS I came up with recently that I use to generate UI ribbons. The code uses `:before/:after` pseudo elements, which means it works in IE8+ and all the other not-shitty browsers. To ensure the content of the ribbon can be modified dynamically using JavaScript, I've set the pseudo element's `content` property with the value `attr(ribbon)`. The `attr()` content function grabs the parent element's ribbon HTML attribute string (example: `ribbon="SomeText"`) and uses it for the ribbon's content. I'm pretty sure this is one of, if not *the*, shortest bit of code required to create CSS ribbons, but perhaps you all can improve upon it:
 
-```
-
+```css
 .ribbon:before {
 	display: block;
 	content: attr(ribbon);

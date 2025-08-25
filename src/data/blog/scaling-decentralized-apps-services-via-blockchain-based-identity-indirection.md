@@ -32,7 +32,9 @@ When you consider the breathtaking enormity of the scale, it's hard to precisely
 
 Another scalability consideration is the fact that transactions on some blockchains trigger consensus-based computation of programmatic 'contracts'. While this is a neat feature, it also incurs a significant cost that must be borne by nodes on the network. Ethereum devs themselves are open about the fundamental performance limitations of these contract computations: > "Clearly Ethereum is not about optimizing efficiency of computation. Its parallel processing is redundantly parallel. This is to offer an efficient way to reach consensus on the system state without needing trusted third parties, oracles or violence monopolies. But importantly they are not there for optimal computation. The fact that contract executions are redundantly replicated across nodes, naturally makes them expensive, which generally creates an incentive not to use the blockchain for computation that can be done off-chain."
 
-(I want you to remember the word `off-chain`, it's going to come up a lot) ### Data Storage
+(I want you to remember the word `off-chain`, it's going to come up a lot)
+
+### Data Storage
 
 Blockchains do not allow much data to be embedded within their transactions, and rightly so, because duplicating data across a significant number of nodes is a non-starter when you're talking about billions of transactions per second. In fact, at those transactional rates - even with strict transactional data limits, pruning, and aggressive transaction aggregation - the network would still generate *hundreds of petabytes* of data annually. This would likely reduce the number of full nodes in the network, and the widespread replication of blockchain transactional data that goes with it.
 
@@ -54,9 +56,11 @@ We are currently working on an open source system that will enable cross-blockch
 2. Logging time of occurrence
 3. Verifying the participation of all parties involved
 
-It turns out we can accomplish all three of these by having various parties to an action sign a payload comprised of source data, the state of that data, the time of occurrence (if relevant), and proof of participation using their globally verifiable, blockchain-based identity. ## Use-Case: Renting an Apartment
+It turns out we can accomplish all three of these by having various parties to an action sign a payload comprised of source data, the state of that data, the time of occurrence (if relevant), and proof of participation using their globally verifiable, blockchain-based identity.
 
-Let's compare how non-monetary, blockchain-based use-cases are handled under the Blockchain Transactional Model, vs handling them entirely off-chain via the Blockchain Identity Model. Imagine Jane wants to rent an apartment from Bill - here's how that plays out under each model: 
+## Use-Case: Renting an Apartment
+
+Let's compare how non-monetary, blockchain-based use-cases are handled under the Blockchain Transactional Model, vs handling them entirely off-chain via the Blockchain Identity Model. Imagine Jane wants to rent an apartment from Bill - here's how that plays out under each model:
 
 ### **Blockchain Transactional Model (On-Chain)**
 
@@ -73,7 +77,6 @@ Let's compare how non-monetary, blockchain-based use-cases are handled under the
 ### Blockchain Identity Model (Off-Chain):
 
 ![identity-rental-agreement-flow](https://www.backalleycoder.com/wp-content/uploads/2016/07/identity-rental-agreement-flow.svg)
-
 
 #### Result:
 

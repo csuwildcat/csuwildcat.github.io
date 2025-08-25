@@ -21,8 +21,9 @@ In Firefox there are two separate events, `overflow` and `underflow`. In WebKit 
 
 ## Unifying Flow Events
 
-To make this flow event circus easier to deal with, let's distill them into one cross-browser method that allows us to discreetly listen for overflow and underflow state changes: ```
+To make this flow event circus easier to deal with, let's distill them into one cross-browser method that allows us to discreetly listen for overflow and underflow state changes:
 
+```js
 function addFlowListener(element, type, fn){
   var flow = type == 'over';
   element.addEventListener('OverflowEvent' in window ? 'overflowchanged' : type + 'flow', function(e){
