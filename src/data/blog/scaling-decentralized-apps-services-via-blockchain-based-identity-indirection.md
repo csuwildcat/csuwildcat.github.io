@@ -64,7 +64,7 @@ Let's compare how non-monetary, blockchain-based use-cases are handled under the
 
 ### **Blockchain Transactional Model (On-Chain)**
 
-![rental-agreement-flow](../../assets/images/rental-agreement-flow.svg)
+![rental-agreement-flow](/images/rental-agreement-flow.svg)
 
 #### Result:
 
@@ -76,7 +76,7 @@ Let's compare how non-monetary, blockchain-based use-cases are handled under the
 
 ### Blockchain Identity Model (Off-Chain):
 
-![identity-rental-agreement-flow](../../assets/images/identity-rental-agreement-flow.svg)
+![identity-rental-agreement-flow](/images/identity-rental-agreement-flow.svg)
 
 #### Result:
 
