@@ -18,7 +18,9 @@ For some time now I have wanted the ability to route paths for a `gh-pages` site
 
 ## One more time, with feeling
 
-After sleeping on it, I thought to myself: "Self, we're deep in fuck-it territory, so why don't I make this hack even dirtier?!" To that end, I developed an even better hack that provides the same functionality and simplicity, while also preserving your site's crawler juice - and you don't even need to waste time copying your `index.html` file to a `404.html` file anymore! The following solution should work in all modern desktop and mobile browsers (Edge, Chrome, Firefox, Safari), and Internet Explorer 10+. **Template & Demo:** If you want to skip the explanation and get the goods, here's a [template repo](https://github.com/csuwildcat/sghpa) (<https://github.com/csuwildcat/sghpa>), and a test URL to see it in action: <https://csuwildcat.github.io/sghpa/foo/bar>### That's so META
+After sleeping on it, I thought to myself: "Self, we're deep in fuck-it territory, so why don't I make this hack even dirtier?!" To that end, I developed an even better hack that provides the same functionality and simplicity, while also preserving your site's crawler juice - and you don't even need to waste time copying your `index.html` file to a `404.html` file anymore! The following solution should work in all modern desktop and mobile browsers (Edge, Chrome, Firefox, Safari), and Internet Explorer 10+. **Template & Demo:** If you want to skip the explanation and get the goods, here's a [template repo](https://github.com/csuwildcat/sghpa) (<https://github.com/csuwildcat/sghpa>), and a test URL to see it in action: <https://csuwildcat.github.io/sghpa/foo/bar>
+
+### That's so META
 
 The first thing I did was investigate other options for getting the browser to redirect to the `index.html` page. That part was pretty straight forward, you basically have three options: server config, JavaScript `location` manipulation, or a meta refresh tag. The first one is obviously a no-go for GitHub pages, and JavaScript is basically the same as a refresh, but arguably worse for crawler indexing, so that leaves us with the meta tag. Setting a meta tag with a refresh of 0 [appears to be treated as a 301 redirect](http://sebastians-pamphlets.com/google-and-yahoo-treat-undelayed-meta-refresh-as-301-redirect/) by search engines, which works out well for this use-case. You'll need to start by adding a `404.html` file to your `gh-pages` repo that contains an empty HTML document inside it - but your document ***must*** total more than 512 bytes (explained below). Next put the following markup in your `404.html` page's `head` element:
 
@@ -55,4 +57,6 @@ In order to capture and restore the URL the user initially navigated to, you'll 
 
 This bit of JavaScript retrieves the URL we cached in `sessionStorage` over on the `404.html` page and replaces the current `history` entry with it. However you choose to handle things from there is up to you, but I'd use `popstate` and `hashchange` if you can. ---
 
-Well folks, that's it - now go hug it out and celebrate by writing some single-page apps on GitHub Pages! \[WPGP gif_id="175" width="600"\]
+Well folks, that's it - now go hug it out and celebrate by writing some single-page apps on GitHub Pages!
+
+![](../../assets/images/mav-iceman-hug.gif)

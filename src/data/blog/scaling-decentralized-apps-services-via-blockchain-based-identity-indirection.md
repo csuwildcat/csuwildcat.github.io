@@ -20,13 +20,13 @@ Developers of apps and services, blockchain-based or not, must always consider e
 
 ### Transaction Rate
 
-Currently there are two main blockchains: Bitcoin and Ethereum. Neither of these large-scale blockchain implementations publicly exceed double digits in per-second transaction rates. While various members of the blockchain community are experimenting with Proof of Stake and Sharding, which could theoretically push transaction rates "into the millions per second", these additions introduce new constraints and network characteristics that could impact how developers write apps and services. But let's assume blockchains could process *millions* of transactions per second - is that enough? The real question is: *"How many transactions per second would we need for an on-chain world of people, apps, services, and devices?"*To answer that, imagine a world where organic and inorganic entities are generating frequent, on-chain transactions - here are a few examples of transaction sources: - Billions of people each generating transactions throughout the day
+Currently there are two main blockchains: Bitcoin and Ethereum. Neither of these large-scale blockchain implementations publicly exceed double digits in per-second transaction rates. While various members of the blockchain community are experimenting with Proof of Stake and Sharding, which could theoretically push transaction rates "into the millions per second", these additions introduce new constraints and network characteristics that could impact how developers write apps and services. But let's assume blockchains could process *millions* of transactions per second - is that enough? The real question is: *"How many transactions per second would we need for an on-chain world of people, apps, services, and devices?"*. To answer that, imagine a world where organic and inorganic entities are generating frequent, on-chain transactions - here are a few examples of transaction sources: - Billions of people each generating transactions throughout the day
 - Hundreds of millions of IoT devices triggering transactions
 - Millions of apps, services, and bots performing background transactions
 
 When you consider the breathtaking enormity of the scale, it's hard to precisely quantify a lower bound, but *BILLIONS* of transactions per second may be *conservative*.
 
-![Dr Evil](https://www.backalleycoder.com/wp-content/uploads/2016/07/rzyfKR5.png)
+![Dr Evil](../../assets/images/rzyfKR5.png)
 
 ### Transaction-related Computation
 
@@ -50,7 +50,7 @@ What if I told you blockchain-anchored identity could provide a more efficient m
 
 There are known choke points in the transmission, computation, and storage of on-chain transactions that make the Blockchain Transactional Model prohibitive at high levels of transactional load. But what does that mean for the promise of decentralized apps and services - is blockchain still the solution? The answer is yes, but you'll need to free your mind.
 
-![red-pill-blue-pill](https://www.backalleycoder.com/wp-content/uploads/2016/07/red-pill-blue-pill-300x269.png)
+![red-pill-blue-pill](../../assets/images/red-pill-blue-pill.png)
 
 We are currently working on an open source system that will enable cross-blockchain registrations of identifiers for self-sovereign identities. Think of it like a transparent, open source, blockchain-based naming and identity layer for the world. Users will own their identities and can prove ownership based on control of a private key linked to a known identifier. \[alert color="blue" icon="exclamation-circle"\] A blockchain-based identity can be used to represent any type of entity, including: people, apps, services, companies, government agencies, etc. \[/alert\] Regardless of the non-monetary decentralized app or service use-case - *rental agreement, supply chain system, car title transfer, or any other attestation* - it all boils down to three key features: 1. Capturing the state of data
 2. Logging time of occurrence
@@ -64,7 +64,7 @@ Let's compare how non-monetary, blockchain-based use-cases are handled under the
 
 ### **Blockchain Transactional Model (On-Chain)**
 
-![rental-agreement-flow](https://www.backalleycoder.com/wp-content/uploads/2016/07/rental-agreement-flow.svg)
+![rental-agreement-flow](../../assets/images/rental-agreement-flow.svg)
 
 #### Result:
 
@@ -76,7 +76,7 @@ Let's compare how non-monetary, blockchain-based use-cases are handled under the
 
 ### Blockchain Identity Model (Off-Chain):
 
-![identity-rental-agreement-flow](https://www.backalleycoder.com/wp-content/uploads/2016/07/identity-rental-agreement-flow.svg)
+![identity-rental-agreement-flow](../../assets/images/identity-rental-agreement-flow.svg)
 
 #### Result:
 

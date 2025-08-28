@@ -29,7 +29,7 @@ Wow, what a profound thought! While that is *technically* true, it's also the [L
 
 The craziest part about these statements is how absolutely backwards they are when used to target decentralized, distributed systems vs others. Perhaps the folks who emit this brand of truthiness need a reminder about the reality of their claim: A centralized or proprietary system is just as likely to go dark for any number of reasons.
 
-![yahoo-geocities-homepage](https://www.backalleycoder.com/wp-content/uploads/2016/05/yahoo-geocities-homepage-300x207.png)
+![yahoo-geocities-homepage](../../assets/images/yahoo-geocities-homepage.png)
 
 Disturbingly (not really), you can no longer access these systems (though some have been archived by various sites): - GeoCities
 - AltaVista
@@ -50,7 +50,7 @@ In contrast, decentralized, distributed systems with significant traction, scale
 
 ## The Nickelback Persistence Conjecture
 
-![nickelback-meme-31](https://www.backalleycoder.com/wp-content/uploads/2016/05/nickelback-meme-31-300x222.jpg)
+![nickelback-meme-31](../../assets/images/nickelback-meme-31.jpg)
 
 Now we get to the fun part. How does one articulate to someone deeply skeptical of open source, decentralized, distributed systems, such as a blockchain, that their data will not vanish suddenly? How does one rebut the statement that these systems must rely on unsustainable economic interests for anyone to run them? After hearing that Britney Spears song at Google I/O, I wondered: *"Is this noise pollution still available on decentralized systems (torrents, etc.) after this long?"* When I got home I decided to up the ante in my search for long-lasting, distributed trash, so I chose to base my conjecture on the poster child of musical eye-rolling: Nickelback. Not many people like Nickelback, and that's great, because those who are circulating its songs on a peer network are probably doing so out of some unnatural affection for them or specific self-interest. As it turns out, I took a look and found that Nickelback's songs are still available on peer networks 20 years after they first appeared. Herein lies the conjecture I present to you, without further delay: > The mean duration that data will remain persistently available on an open source, decentralized, distributed system that reaches at least the size, popularity, or acolyte following of Nickelback, is roughly equal to the time period from which Nickelback's songs first became available to the day no peer nodes remain that circulate their 'music'.
 

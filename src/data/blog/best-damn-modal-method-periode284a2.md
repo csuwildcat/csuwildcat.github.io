@@ -16,11 +16,11 @@ description: A comprehensive cross-browser modal implementation method that hand
 
 ### Thinking Outside the Box...Literally
 
- The other day, I threw an off-the-shelf lightbox script into a new project that I had used previously. Quickly, old frustrations returned as I looked over the mess of code and calculations required to do something as simple as positioning an element in the center of a page. I thought "Holy expletive outburst Batman, there has to be a better way than this!". Turns out there was. I've devised a method for centering modal content that is radically easier than any that have come before it. There are two types of modals you can create with this method that I'll be discussing in this post. The first is a basic single element modal. The second is a modal with a header, footer, and even more dynamic height functionality. Both varieties automatically resize and recenter the modal in response to changes in size or content. The two methods work in IE7+, Firefox 2+, Chrome, and Safari 3+ (IE6 support requires fixed position fakery, but that is par for the course). Here is a diagram so you can visualize the basic HTML and CSS that forms the foundational for both variations of the method: ![](https://www.backalleycoder.com/wp-content/uploads/2011/11/best-damn-modal.png)
+ The other day, I threw an off-the-shelf lightbox script into a new project that I had used previously. Quickly, old frustrations returned as I looked over the mess of code and calculations required to do something as simple as positioning an element in the center of a page. I thought "Holy expletive outburst Batman, there has to be a better way than this!". Turns out there was. I've devised a method for centering modal content that is radically easier than any that have come before it. There are two types of modals you can create with this method that I'll be discussing in this post. The first is a basic single element modal. The second is a modal with a header, footer, and even more dynamic height functionality. Both varieties automatically resize and recenter the modal in response to changes in size or content. The two methods work in IE7+, Firefox 2+, Chrome, and Safari 3+ (IE6 support requires fixed position fakery, but that is par for the course). Here is a diagram so you can visualize the basic HTML and CSS that forms the foundational for both variations of the method: ![](../../assets/images/best-damn-modal-300x139.png)
  
- #### A Simple Modal
+#### A Simple Modal
 
- Start with the following simple HTML structure:
+Start with the following simple HTML structure:
  
  ```html
 <table id="modal">

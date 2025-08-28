@@ -98,7 +98,9 @@ Let's imagine I have a `section` element that contains a `ul`. I want to style t
 
 ##### The CSS
 
-Once a query is matched, the name you gave the query will be added to the `matched-media` attribute. It's a space separated list, so if multiple are matched, you would use it in CSS just like other attributes of this sort, `class=""` for instance. Here's a post by Chris Coyier on all the ways you can style elements based on their attribute values: [http://css-tricks.com/attribute-selectors/](http://css-tricks.com/attribute-selectors/ "Chris Coyier - CSS Attribute Selectors"). Here's an example of what writing CSS against an Element Query match looks like, based on the HTML example content above: ```
+Once a query is matched, the name you gave the query will be added to the `matched-media` attribute. It's a space separated list, so if multiple are matched, you would use it in CSS just like other attributes of this sort, `class=""` for instance. Here's a post by Chris Coyier on all the ways you can style elements based on their attribute values: [http://css-tricks.com/attribute-selectors/](http://css-tricks.com/attribute-selectors/ "Chris Coyier - CSS Attribute Selectors"). Here's an example of what writing CSS against an Element Query match looks like, based on the HTML example content above:
+
+```css
 section[matched-media~="small-width"] {
   font-size: 50%; /* small text for a wee lil element! */
 }
@@ -123,14 +125,9 @@ To make things even easier, I've created a Web Component [Custom Element](http:/
 - Two
 - Three
 
-```
-
-
-```
-
 ##### The CSS (also the same)
 
-```
+```css
 x-querybox[matched-media~="small-width"] {
   font-size: 50%; /* small text for a wee lil querybox! */
 }
@@ -138,7 +135,7 @@ x-querybox[matched-media~="small-width"] {
 
 ##### Moar goodies! The `mediachange` custom event
 
-```
+```js
 document.querySelector('x-querybox').addEventListener('mediachange', function(e){
   // the event detail property is an array of the active element queries
   if (e.detail.indexOf('small-width') > -1) {
@@ -153,7 +150,9 @@ Checkout the demo, and go grab the code. Feel free to contribute to either of th
 
 ### Demo
 
-The demo is based on the Web Component version of the code to show both the basic and extended features. It's only meant to give you a general idea of what is possible. The shapes are style with percentage units, so you can resize the window to expand them, or grow them with a tap (via `:hover` CSS styles). As the shapes progress through their size changes, you'll notice the text and background colors change to indicate they have hit a new break-point - this is all based on their individual, element-scoped queries. If you open the console, you will notice I am logging all the `mediachange` events that occur. The demo is more impressive on a larger screen, where you can test all the query changes: [`Element Queries Demo`](https://www.backalleycoder.com/x-querybox/demo/ "Element Queries Demo")### Repos
+The demo is based on the Web Component version of the code to show both the basic and extended features. It's only meant to give you a general idea of what is possible. The shapes are style with percentage units, so you can resize the window to expand them, or grow them with a tap (via `:hover` CSS styles). As the shapes progress through their size changes, you'll notice the text and background colors change to indicate they have hit a new break-point - this is all based on their individual, element-scoped queries. If you open the console, you will notice I am logging all the `mediachange` events that occur. The demo is more impressive on a larger screen, where you can test all the query changes: [`Element Queries Demo`](https://www.backalleycoder.com/x-querybox/demo/ "Element Queries Demo")
+
+### Repos
 
 I have two different repositories on my Github profile, one for the vanilla version, and one for the `x-querybox` X-Tag Web Component: - Web Component version: <https://github.com/csuwildcat/x-querybox>
 - Vanilla version: <https://github.com/csuwildcat/element-queries>

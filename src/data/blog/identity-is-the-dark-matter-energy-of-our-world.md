@@ -18,7 +18,7 @@ Defining identity is a notoriously difficult endeavor. Identity, in the technolo
 
 According to Dark Matter & Energy theory, the atoms, particles, and energy people commonly believe are the sum total of the universe, is known as Baryonic matter. Interestingly, and in contrast with human perception, the theory postulates that this form of matter only makes up ~5% of total matter and energy in the universe. The vast majority of the universe is said to be composed of another form of matter and energy, Dark Matter and Dark Energy. I find it fascinating there can be so much beyond our perception that goes into producing the relatively tiny sliver of what we recognize as our world.
 
-![A visualization of Dark Matter](https://www.backalleycoder.com/wp-content/uploads/2018/01/darkmatter-400-300x293.png)
+![A visualization of Dark Matter](../../assets/images/darkmatter-400.png)
 
 <span class="caption" style="display:block; text-align:center; font-size:0.9em; color:#888;">
 NASA, ESA, and E. Hallman (University of Colorado, Boulder)
@@ -30,7 +30,7 @@ I posit to you that your perception of the countless interactions and exchanges 
 
 Every object on the planet (alive or inanimate) is a distinct entity, each with its own identity - this includes humans, organizations, devices, bots, VR objects, and countless other nouns. But the rabbit’s hole goes much deeper: this swirl of identities is constantly interacting with each other in ways you probably don't recognize as identity transactions. What these identities generate, exchange, and experience during their interactions are transfers of identity-encoded data that augment their state, definition, and accrued provenance.
 
-![](https://www.backalleycoder.com/wp-content/uploads/2018/01/decentralized-1024x480.jpg)
+![](../../assets/images/decentralized.jpg)
 
 All identity interactions are generally based on the transfer of self-signed or multi-party proofs; *attestations*, as many in the industry refer to them. These identity-linked proofs are what form the basis of trust and auditability when interacting with other identities.
 
@@ -47,7 +47,7 @@ As you can see, almost everything you do in life is an identity-encoded transact
 
 We talk about identity, proofs, and signatures as the fundamental building blocks of every interaction between entities, but what technical options are best suited for this? In my early work at Mozilla, and more serious development now at Microsoft and the [Decentralized Identity Foundation](http://identity.foundation), we found that decentralized blockchains provide a solid foundation for anchoring [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) and DPKI operations. By using decentralized blockchains as a root of trust for anchoring identifiers and their association with cryptographic keys and off-chain personal datastores, you can create a system with just the right mix of attributes and features to support these kinds of identity interactions. Here's a graphic that shows what the system looks like from a high level:
 
-[![](https://www.backalleycoder.com/wp-content/uploads/2018/01/full-system.png)](https://www.backalleycoder.com/wp-content/uploads/2018/01/full-system.png)
+[![](../../assets/images/full-system.png)](../../assets/images/full-system.png)
 
 With this layered approach, most interactions are able to be done off-chain by simply signing data and [Verifiable Credentials](https://w3c.github.io/vc-data-model/) with keys that are linked to blockchain-anchored identifiers. In many cases, the time-state of these identity interactions can also be important, so the identities involved may want to create a chain-anchored proof that captures the state of what they exchanged, when they exchanged it.
 
