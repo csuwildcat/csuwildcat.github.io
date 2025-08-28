@@ -3,34 +3,30 @@ layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
 
-AstroPaper is a minimal, responsive and SEO-friendly Astro blog theme. I designed and crafted this based on [my personal blog](https://satnaing.dev/blog).
+<img src="/src/assets/images/profile-image.jpg" alt="Daniel Buchner" style="max-width: 250px;" />
 
-This theme is aimed to be accessible out of the box. Light and dark mode are supported by
-default and additional color schemes can also be configured.
+I'm Daniel Buchner, a product designer, software engineer, and open source developer with a passion for building the future of identity, web standards, and distributed systems. This where I share my long-form thoughts on code, technology, Bitcoin, dfand the ever-evolving web.
 
-This theme is self-documented \_ which means articles/posts in this theme can also be considered as documentations. So, see the documentation for more info.
+## My Journey
 
-<div>
-  <img src="/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
-</div>
+My career has taken me through some of the most influential technology companies, where I've had the opportunity to work on projects that shape how we interact with the digital world:
 
-## Tech Stack
+**Currently at Gemini** - Working on various products in the cryptocurrency and financial technology space.
 
-This theme is written in vanilla JavaScript (+ TypeScript for type checking) and a little bit of ReactJS for some interactions. TailwindCSS is used for styling; and Markdown is used for blog contents.
+**Block (formerly Square)** - As Head of Decentralized Identity, I led initiatives to bring user-sovereign identity solutions to millions of users, focusing on blockchain-based identity systems and decentralized technologies.
 
-## Features
+**Microsoft** - During my time at the Redmond giant, I worked on the Edge browser and founded the Decentralized Identity group, which later became what's now known as Entra Verified ID. I was deeply involved in creating standards, protocols, and products for the emerging space of self-sovereign identity and helped establish Microsoft's presence in the decentralized identity space.
 
-Here are certain features of this site.
+**Mozilla** - I led the Developer Ecosystem team and was heavily involved in Web standards development. This is where I got my start in large-scale open source development and browser technologies. I worked on Firefox add-ons, including the Add-on SDK (formerly Jetpack), and developed numerous Web standards in partnership with Google and other vendors, such as Web Components and Web Extensions.
 
-- fully responsive and accessible
-- SEO-friendly
-- light & dark mode
-- fuzzy search
-- super fast performance
-- draft posts
-- pagination
-- sitemap & rss feed
-- highly customizable
+## What Drives Me
 
-If you like this theme, you can star/contribute to the [repo](https://github.com/satnaing/astro-paper).  
-Or you can even give any feedback via my [email](mailto:contact@satnaing.dev).
+I'm passionate about creating technology that puts users in control of their own data and digital identity. My work in decentralized systems stems from a belief that the internet should be more open, interoperable, and user-centric. Whether it's through Web standards, blockchain technologies, or developer tools, I'm always looking for ways to make the web better for everyone.
+
+## Current Focus
+
+These days, you'll find me working on products at Gemini while continuing to contribute to the broader ecosystem of decentralized technologies. I'm particularly interested in the intersection of traditional finance and Bitcoin, and how we can build more secure, user-friendly systems for managing digital assets and identity.
+
+When I'm not coding or designing systems, I enjoy writing about technology, libertarianism, and Bitcoin on X.
+
+If you're interested in decentralized identity, Web standards, or just want to chat about the future of technology, feel free to reach out. You can find me on [GitHub](https://github.com/csuwildcat), [X/Twitter](https://x.com/csuwildcat), or [LinkedIn](https://www.linkedin.com/in/dbuchner/).
