@@ -13,7 +13,7 @@ My career has taken me through some of the most influential technology companies
 
 **Currently at Gemini** - Working on various products in the cryptocurrency and financial technology space.
 
-**Block (formerly Square)** - As Head of Decentralized Identity, I led initiatives to bring user-sovereign identity solutions to millions of users, focusing on blockchain-based identity systems and decentralized technologies.
+**Block (formerly Square)** - As Head of Decentralized Identity, I led initiatives to bring user-sovereign identity solutions to millions of users, focusing on decentralized identity systems and other liberating technologies.
 
 **Microsoft** - During my time at the Redmond giant, I worked on the Edge browser and founded the Decentralized Identity group, which later became what's now known as Entra Verified ID. I was deeply involved in creating standards, protocols, and products for the emerging space of self-sovereign identity and helped establish Microsoft's presence in the decentralized identity space.
 
@@ -21,7 +21,7 @@ My career has taken me through some of the most influential technology companies
 
 ## What Drives Me
 
-I'm passionate about creating technology that puts users in control of their own data and digital identity. My work in decentralized systems stems from a belief that the internet should be more open, interoperable, and user-centric. Whether it's through Web standards, blockchain technologies, or developer tools, I'm always looking for ways to make the web better for everyone.
+I'm passionate about creating technology that puts users in control of their own data and digital identity. My work in decentralized systems stems from a belief that the internet should be more open, interoperable, and user-centric. Whether it's through Web standards, Bitcoin-related development, or developer tools, I'm always looking for ways to make the web better for everyone.
 
 ## Current Focus
 
