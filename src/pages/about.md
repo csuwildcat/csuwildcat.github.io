@@ -3,7 +3,7 @@ layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
 
-<img src="/src/assets/images/headshot.png" alt="Daniel Buchner" style="max-width: 250px; margin-block: 0 2em !important;" />
+<img src="/headshot.png" alt="Daniel Buchner" style="max-width: 250px; margin-block: 0 2em !important;" />
 
 I'm Daniel Buchner, a product designer, software engineer, and open source developer with a passion for building the future of identity, web standards, and distributed systems. This where I share my long-form thoughts on code, technology, Bitcoin, and the ever-evolving Web.
 
