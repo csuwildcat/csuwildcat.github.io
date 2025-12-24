@@ -30,7 +30,9 @@ When you consider the breathtaking enormity of the scale, it's hard to precisely
 
 ### Transaction-related Computation
 
-Another scalability consideration is the fact that transactions on some blockchains trigger consensus-based computation of programmatic 'contracts'. While this is a neat feature, it also incurs a significant cost that must be borne by nodes on the network. Ethereum devs themselves are open about the fundamental performance limitations of these contract computations: > "Clearly Ethereum is not about optimizing efficiency of computation. Its parallel processing is redundantly parallel. This is to offer an efficient way to reach consensus on the system state without needing trusted third parties, oracles or violence monopolies. But importantly they are not there for optimal computation. The fact that contract executions are redundantly replicated across nodes, naturally makes them expensive, which generally creates an incentive not to use the blockchain for computation that can be done off-chain."
+Another scalability consideration is the fact that transactions on some blockchains trigger consensus-based computation of programmatic 'contracts'. While this is a neat feature, it also incurs a significant cost that must be borne by nodes on the network. Ethereum devs themselves are open about the fundamental performance limitations of these contract computations:
+
+> "Clearly Ethereum is not about optimizing efficiency of computation. Its parallel processing is redundantly parallel. This is to offer an efficient way to reach consensus on the system state without needing trusted third parties, oracles or violence monopolies. But importantly they are not there for optimal computation. The fact that contract executions are redundantly replicated across nodes, naturally makes them expensive, which generally creates an incentive not to use the blockchain for computation that can be done off-chain."
 
 (I want you to remember the word `off-chain`, it's going to come up a lot)
 

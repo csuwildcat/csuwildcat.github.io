@@ -23,34 +23,48 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 <Layout>
   <Header />
   <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-8 pb-6">
+    <section
+      id="hero"
+      class="pt-8 pb-6"
+      style="font-size: clamp(0.8rem, 0.8rem + 0.4vw, 1.1rem);"
+    >
+      <div class="flex items-start" style="gap: clamp(0.9rem, 3.5vw, 1.7rem);">
+        <img
+          src="src/assets/images/headshot.png"
+          alt="Hooded Coder"
+          class="aspect-square rounded-md object-cover"
+          style="width: clamp(80px, 20%, 150px);"
+        />
 
-       <img src="src/assets/images/hooded_coder.png" alt="Hooded Coder" class="mx-auto mt-4" />
+        <div class="flex min-w-0 flex-col gap-4">
+          <p style="margin-top: 0;">
+            This is the personal blog of Daniel Buchner, a product designer, software engineer, and
+            open source developer. Currently I work at Gemini on an array of products. 
+          </p>
+        </div>
+      </div>
 
-      <p>
-        This is the personal blog of Daniel Buchner, a product designer, software engineer, and
-        open source developer. Currently I work at Gemini on various products.
-      </p>
+      <div class="mt-6 space-y-4">
+        <p>
+          Where my career has taken me:
+        </p>
 
-      <p>
-        Where my career has taken me:
-      </p>
+        <ul class="styled-list">
+          <li>Block - Head of Decentralized Identity</li>
+          <li>Microsoft - Worked on Edge browser, created the Decentralized Identity group (Entra Verified ID)</li>
+          <li>Mozilla - Led the Developer Ecosystem team, Web standards development</li>
+        </ul>
 
-      <ul class="styled-list">
-        <li>Block - Head of Decentralized Identity</li>
-        <li>Microsoft - Worked on Edge browser, created the Decentralized Identity group (Entra Verified ID)</li>
-        <li>Mozilla - Led the Developer Ecosystem team, Web standards development</li>
-      </ul>
-
-      {
-        // only display if at least one social link is enabled
-        SOCIALS.length > 0 && (
-          <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
-            <div class="mr-2 mb-1 whitespace-nowrap sm:mb-0">Social Links:</div>
-            <Socials />
-          </div>
-        )
-      }
+        {
+          // only display if at least one social link is enabled
+          SOCIALS.length > 0 && (
+            <div class="flex flex-nowrap items-center gap-2 overflow-x-auto">
+              <div class="flex-shrink-0 whitespace-nowrap">Social Links:</div>
+              <Socials />
+            </div>
+          )
+        }
+      </div>
     </section>
 
     <Hr />
