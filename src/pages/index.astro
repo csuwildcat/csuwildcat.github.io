@@ -29,12 +29,15 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       style="font-size: clamp(0.8rem, 0.8rem + 0.4vw, 1.1rem);"
     >
       <div class="flex items-start" style="gap: clamp(0.9rem, 3.5vw, 1.7rem);">
-        <img
-          src="/headshot.png"
-          alt="Hooded Coder"
-          class="aspect-square rounded-md object-cover"
-          style="width: clamp(80px, 20%, 150px);"
-        />
+        <picture>
+          <source srcset="/headshot.webp" type="image/webp" />
+          <img
+            src="/headshot.png"
+            alt="Hooded Coder"
+            class="aspect-square rounded-md object-cover"
+            style="width: clamp(80px, 20%, 150px);"
+          />
+        </picture>
 
         <div class="flex min-w-0 flex-col gap-4">
           <p style="margin-top: 0;">
