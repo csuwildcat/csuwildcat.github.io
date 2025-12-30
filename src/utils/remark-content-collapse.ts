@@ -17,8 +17,8 @@ type DirectiveNode = {
 const DEFAULT_LABEL = "Show All";
 
 export default function remarkContentCollapse() {
-  return (tree: DirectiveNode) => {
-    visit(tree, "containerDirective", node => {
+  return (tree: unknown) => {
+    visit(tree as DirectiveNode, "containerDirective", node => {
       const directive = node as DirectiveNode;
       if (directive.name !== "collapse") {
         return;
