@@ -1,6 +1,7 @@
 ---
 title: 'PassSeeds - Hijacking Passkeys to Unlock Cryptographic Use Cases'
 pubDatetime: 2025-12-26T16:35:11Z
+draft: true
 featured: true
 author: 'Daniel Buchner'
 tags:
