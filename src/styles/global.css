@@ -43,6 +43,11 @@ html[data-theme="dark"] {
   p {
     @apply mt-4;
   }
+
+  .prose p:has(img) {
+    margin: 2.5em auto !important;
+  }
+
   a,
   button {
     @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
@@ -53,7 +58,7 @@ html[data-theme="dark"] {
   }
   section,
   footer {
-    @apply mx-auto max-w-3xl px-4;
+    @apply mx-auto max-w-3xl px-5 sm:px-4;
   }
 }
 

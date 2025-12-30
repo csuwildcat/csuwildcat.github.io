@@ -19,7 +19,6 @@ Defining identity is a notoriously difficult endeavor. Identity, in the technolo
 According to Dark Matter & Energy theory, the atoms, particles, and energy people commonly believe are the sum total of the universe, is known as Baryonic matter. Interestingly, and in contrast with human perception, the theory postulates that this form of matter only makes up ~5% of total matter and energy in the universe. The vast majority of the universe is said to be composed of another form of matter and energy, Dark Matter and Dark Energy. I find it fascinating there can be so much beyond our perception that goes into producing the relatively tiny sliver of what we recognize as our world.
 
 ![A visualization of Dark Matter](../../assets/images/darkmatter-400.png)
-
 <span class="caption" style="display:block; text-align:center; font-size:0.9em; color:#888;">
 NASA, ESA, and E. Hallman (University of Colorado, Boulder)
 </span>

@@ -11,7 +11,9 @@ tags:
 description: Renewing the discussion around app-to-app interaction APIs for the web, examining past attempts like Web Activities and Web Intents and proposing better solutions.
 ---
 
-![Cow, come in cow](../../assets/images/goat-to-cow-come-in-cow.jpg)The battle ground of app-to-app interaction history is littered with abandoned ideas, half-solutions, and unimplemented APIs. The current, consumer/provider interaction paradigm for apps and services is a mess of one-off, provider-defined systems that each use their own transaction mechanisms and custom data structures. This makes it hard to do simple things across N providers, like save something to a user's preferred storage service without jumping through provider-specific code and UX hoops.... I'd like to restart the conversation about bringing legit, app-to-app interaction APIs to the Web. There have been past spec attempts, namely Web Activities and Web Intents, but I'll argue that while they get a lot right, they all fail to deliver an A+ solution.
+![Cow, come in cow](../../assets/images/goat-to-cow-come-in-cow.jpg)
+
+The battle ground of app-to-app interaction history is littered with abandoned ideas, half-solutions, and unimplemented APIs. The current, consumer/provider interaction paradigm for apps and services is a mess of one-off, provider-defined systems that each use their own transaction mechanisms and custom data structures. This makes it hard to do simple things across N providers, like save something to a user's preferred storage service without jumping through provider-specific code and UX hoops.... I'd like to restart the conversation about bringing legit, app-to-app interaction APIs to the Web. There have been past spec attempts, namely Web Activities and Web Intents, but I'll argue that while they get a lot right, they all fail to deliver an A+ solution.
 
 ## Wait, what is an "App-to-App Interaction API"?
 

@@ -44,6 +44,75 @@
     white-space: pre;
   }
 
+  .content-collapse {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .content-collapse__content {
+    position: relative;
+  }
+
+  .content-collapse__content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .content-collapse[data-collapsed="true"] .content-collapse__content {
+    max-height: var(--content-collapse-max-height, 24rem);
+    overflow: hidden;
+  }
+
+  .content-collapse[data-collapsed="false"] .content-collapse__content {
+    max-height: none;
+  }
+
+  .content-collapse[data-collapsed="true"] .content-collapse__content::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3rem;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, black 90%, transparent)
+    );
+  }
+
+  .content-collapse-toggle {
+    align-self: center;
+    padding-top: 0.4em;
+    line-height: 2em !important;
+  }
+
+  .content-collapse .content-collapse-toggle::before {
+    font-size: 1.25rem;
+    padding: 0 0.3em 0 0;
+    margin-top: -0.185em;
+  }
+
+  .content-collapse[data-collapsed="true"] .content-collapse-toggle {
+    margin-top: 1rem !important;
+  }
+
+  .content-collapse[data-collapsed="true"] .content-collapse-toggle::before {
+    content: "⬍";
+  }
+
+  .content-collapse[data-collapsed="false"] .content-collapse-toggle {
+    margin-top: 0 !important;
+  }
+
+  .content-collapse[data-collapsed="false"] .content-collapse-toggle::before {
+    content: "⨯";
+  }
+
+  .code-block-wrapper {
+    position: relative;
+  }
 
 
   /* Apply Dark Theme (if multi-theme specified) */

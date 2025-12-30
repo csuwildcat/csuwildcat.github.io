@@ -86,7 +86,7 @@ const nextPost =
   <main
     id="main-content"
     class:list={[
-      "mx-auto w-full max-w-3xl px-4 pb-12",
+      "mx-auto w-full max-w-3xl px-5 pb-12 sm:px-4",
       { "mt-8": !SITE.showBackButton },
     ]}
     data-pagefind-body
@@ -230,24 +230,102 @@ const nextPost =
 
   /** Attaches copy buttons to code blocks in the document,
    * allowing users to copy code easily. */
+  function attachContentCollapse() {
+    const collapses = Array.from(document.querySelectorAll(".content-collapse"));
+    for (const collapse of collapses) {
+      if (collapse.dataset.collapseEnhanced === "true") {
+        continue;
+      }
+      collapse.dataset.collapseEnhanced = "true";
+
+      const contentWrapper = document.createElement("div");
+      contentWrapper.className = "content-collapse__content";
+      while (collapse.firstChild) {
+        contentWrapper.appendChild(collapse.firstChild);
+      }
+      collapse.appendChild(contentWrapper);
+
+      const toggleButton = document.createElement("button");
+      toggleButton.className =
+        "content-collapse-toggle mt-3 inline-flex items-center justify-center rounded border border-border bg-muted/70 px-3 py-1 text-xs font-medium text-foreground hover:bg-muted";
+      toggleButton.type = "button";
+
+      const expandLabel =
+        collapse.dataset.collapseLabel ?? "Show All";
+      const collapseLabel =
+        collapse.dataset.collapseCollapseLabel ?? "Collapse";
+      const startOpen = collapse.dataset.collapseOpen === "true";
+
+      if (collapse.dataset.collapseHeight) {
+        const height = collapse.dataset.collapseHeight;
+        const normalizedHeight = /^\d+(\.\d+)?$/.test(height ?? "")
+          ? `${height}rem`
+          : height;
+        collapse.style.setProperty(
+          "--content-collapse-max-height",
+          normalizedHeight ?? ""
+        );
+      }
+
+      const setExpanded = expanded => {
+        collapse.dataset.collapsed = expanded ? "false" : "true";
+        toggleButton.innerText = expanded ? collapseLabel : expandLabel;
+        toggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
+      };
+
+      setExpanded(startOpen);
+      collapse.appendChild(toggleButton);
+
+      toggleButton.addEventListener("click", () => {
+        const isCollapsed = collapse.dataset.collapsed !== "false";
+        if (isCollapsed) {
+          setExpanded(true);
+          return;
+        }
+
+        setExpanded(false);
+        requestAnimationFrame(() => {
+          collapse.scrollIntoView({ block: "start", behavior: "instant" });
+        });
+      });
+
+      requestAnimationFrame(() => {
+        const maxHeight = parseFloat(
+          getComputedStyle(contentWrapper).maxHeight
+        );
+        if (Number.isFinite(maxHeight) && contentWrapper.scrollHeight <= maxHeight + 1) {
+          collapse.dataset.collapsed = "false";
+          toggleButton.remove();
+        }
+      });
+    }
+  }
+  attachContentCollapse();
+
   function attachCopyButtons() {
     const copyButtonLabel = "Copy";
     const codeBlocks = Array.from(document.querySelectorAll("pre"));
 
     for (const codeBlock of codeBlocks) {
+      if (codeBlock.dataset.codeEnhanced === "true") {
+        continue;
+      }
+      codeBlock.dataset.codeEnhanced = "true";
+
       const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
+      wrapper.className = "code-block-wrapper";
 
       const copyButton = document.createElement("button");
       copyButton.className =
         "copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
       copyButton.innerHTML = copyButtonLabel;
+      copyButton.type = "button";
       codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
 
       // wrap codebock with relative parent element
       codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
       wrapper.appendChild(codeBlock);
+      wrapper.appendChild(copyButton);
 
       copyButton.addEventListener("click", async () => {
         await copyCode(codeBlock, copyButton);

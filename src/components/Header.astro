@@ -37,7 +37,7 @@ const isActive = (path: string) => {
   >
     <div
       id="top-nav-wrap"
-      class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"
+      class="relative flex w-full items-baseline justify-between bg-background px-5 py-4 sm:items-center sm:px-4 sm:py-6"
     >
       <a
         href="/"
@@ -71,11 +71,6 @@ const isActive = (path: string) => {
           <li class="col-span-2">
             <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
               Posts
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-              Tags
             </a>
           </li>
           <li class="col-span-2">
