@@ -10,214 +10,84 @@ tags:
   - cryptography
   - identity
   - key management
-description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases while retaining the anti-phishing, biometric UX Passkeys provide.
+description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases to inherit the benefits of cross-device synced keys with native biomentric UX.
 ---
 
-[Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is largely restricted to the website and app login use case. PassSeeds is a technical experiment that explores this question: can we hijack the capabilties and user experience of Passkeys and apply it to use cases where the status quo is often users pasting key material into sites/apps or buying special hardware devices that can be difficult for less technical folks to deal with?
+When I was at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is largely restricted to the website/app login use case.
 
-## How do Passkeys Work?
+PassSeeds is a hack that explores this question: can we hijack the capabilties and user experience of Passkeys to apply it to use cases that strech beyond its rigid model and limited key type support, where the status quo is often users pasting key material into sites/apps, or buying special hardware devices that can be difficult for less technical folks to deal with?
 
-Passkeys are [WebAuthn credentials](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) in the form of asymmetric key pairs, typically used for replacing passwords as the way users log into websites. A key pair is created on the user's device for a website and stored in a secure hardware module on the device. These key pairs are access-scoped to the [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin) of the site they were created on (examples of different origins: `example.com`, `other.example.com`, `test.com`). Passkeys have two modes: device-bound passkeys that never leave the hardware module on the user's device, and syncable passkeys that implementing vendors (iCloud Keychain, Google Password Manager, Windows Hello, etc.) replicate across a user's devices via an end-to-end encrypted sync process. This is a basic overview of the two primary UX flows for generating and using a passkey for login:
+I had deep technical, code-level understanding of the entire surface area for Passkeys and WebAuthn, but it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. In retrospect, it was sitting right in front of me, and seems so obvious - just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and unexpected results.
 
-![Passkey flows](../../assets/images/passkey-flows.png)
-<span class="caption" style="display:block; text-align:center; font-size:0.9em; color:#888;">
-Image from Sahil Dahekar
-</span>
+## The Skinny on Passkeys
 
-A standard WebAuthn exchange uses a passkey to sign over two things: the `authenticatorData` and `clientDataHash`, which is a SHA-256 hash of JSON containing the challenge, origin, and action type (`get` or `create`). The authenticator chooses an allowed algorithm (most commonly ES256 on the P-256/secp256r1 curve) and never reveals the private key. WebAuthn does not let sites request raw key export, except for one-time access to the public key during initial creation of a passkey. That last part is critical to understand: after the initial creation of a passkey, the platform does not record the public key anywhere, or provide an API method by which to retrieve it, treating it effectively as a sensitive, private value it does not export or expose outside of the secure hardware module.
+To understand PassSeeds, it helps to have some awareness of the underlying Passkey technology they are based on.
 
-## The PassSeeds Concept
+::image[Passkey Logo]{src="/src/assets/images/passkey-logo.jpg" maxWidth="300px"}
 
-Passkeys provide phishing-resistant, biometrically gated use of cryptographic keys, but they are very narrowly designed for signing authentication assertions within centralized website flows. Meanwhile, seed and key management flows in Web-based apps remains primitive and convoluted: users copy 12-24 words, stash JSON keystores, or paste in raw keys across apps. PassSeeds introduces a novel approach: treat the passkey’s P-256 public key *itself* as seed material and retrieve it on demand through ECDSA public key recovery. The authenticator still keeps the private key and user-verification requirements, but the recovered public key bytes become the deterministic “PassSeed” that can fuel other cryptographic flows.
+Passkeys are asymmetric key pairs in the format of [WebAuthn credentials](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API), typically used for replacing passwords as the way users log into websites. A key pair is created on the user's device for a website and stored in a secure hardware module on the device. Access to and usage of these key pairs is scoped to the [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin) of the site they were created on (examples of different origins: `example.com`, `other.example.com`, `test.com`). Passkeys are replicated across a user's devices by the platform (iCloud Keychain, Google Password Manager, Windows Hello, etc.) via an end-to-end encrypted sync process. This is a basic overview of the two primary UX flows for generating a passkey and using one for login:
 
-## Extracting the PassSeed with ECDSA Key Recovery
+::image[Passkey generation and signing flows]{src="/src/assets/images/passkey-flows.jpg" maxWidth="600px" caption="Passkey generation and signing flows"}
 
-**Assumption:** you have already created a passkey with `userVerification: required`, and did not involve any server in doing so, never exporting the public key provided at generation time to anywhere outside the page/origin in which it was created (the WebAuthn login registration flow normally sends the server the passkey public key - we are explicitly NOT doing that!)
+### Key Points (pun intended)
 
-1. When the PassSeed's seed material is needed (the user wants to sign a Bitcoin transaction, sign a decentralized social media post, or generate/verify a zero-knowledge proof), the origin the PassSeed is bound to (the app/site the user chooses as their PassSeed wallet) crafts a formatted message (for example, `PassSeed ${nonce}`) and asks the user to sign it twice, via `navigator.credentials.get()`, using the same challenge and RP scope each time.  
-2. Each assertion returns `authenticatorData`, `clientDataJSON`, and a P-256 ECDSA signature. Because both signatures are over the same message, the client can perform ECDSA public key recovery using the two signatures to derive the unique P-256 public key of the passkey. No private material leaves the authenticator; the app receives only the public key bytes.  
-3. The recovered public key (compressed or uncompressed form) is the PassSeed. It is reproducible on demand by repeating the double-sign ECDSA recovery flow, with no exportation of the PassSeed public key at any time.
+There are several attributes of Passkeys to keep in mind that are critical to the PassSeed mechanism detailed in this post:
 
-## Exporting the PassSeed as a Mnemonic
+- Passkeys are key pair + metadata bundles that are securely stored and synced across a user's devices by OS/platform
+- The private AND *public* key are both stored and synced across devices as one highly sensitive bundle
+- If you never store it at generation time and do not allow signatures from its private key out of the generating origin's boundary, no API, metadata, or side-channel reveals the *public* key.
 
-To make the PassSeed user-friendly, the implementation converts the 32-byte PassSeed into a standard BIP-39 mnemonic. In practice, the PassSeed is the SHA-256 hash of the recovered public key, represented as 32 bytes. For a 24-word phrase, the full 32 bytes are used; for a 12-word phrase, the first 16 bytes are used and fed into BIP-39's checksum mechanics. Users can write down or import that phrase; rerunning recovery on the same passkey yields the same phrase, and a different passkey yields a different phrase.
+Given these attributes of the Passkey model, even *public* keys in the system behave like a natively provisioned, hardware-secured, synced secret, even though cryptography does not require them to be secret. This is a rare and valuable set of properties many products, services, and protocols find highly desirable.
+
+## Introducing PassSeeds
+
+::image[Passkey Logo]{src="/src/assets/images/passseed-logo.jpg" maxWidth="500px"}
+
+Passkeys provide biometrically-gated use of cryptographic keys, but they were rigidly created for authentication signing within centralized website login flows. Meanwhile, Web-based apps that require types of cryptographic material and uses Passkeys do not support (`secp256k1` for Bitcoin, `BLS12-381` for ZKP use, etc.) remain primitive and convoluted: users copying 12-24 words, stashing JSON keystores, or pasting raw keys across apps. PassSeeds introduces a novel approach: treat the passkey’s P-256 public key *itself* as seed material and retrieve it on demand through ECDSA public key recovery. The authenticator still keeps the private key and user-verification requirements, but the recovered public key bytes become the deterministic 'PassSeed' that can be used as the foundation to power other cryptographic use cases.
+
+(If you don't want to understand how it works, you can skip to the [DEMO](https://backalleycoder.com/passseeds/))
+
+## PassSeed Generation
+
+**Assumptions:** you have created a passkey, did not export the public key anywhere at generation time, and do not allow any signatures from the passkey outside of the generating origin's local boundary.
+
+**Initial Generation**  
+1) Call `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the generating origin's RP ID.  
+2) The initial passkey creation operation is the only API call where the platform returns the public key, but DO NOT export the public key, as it is effectively the private seed value of the PassSeed and can be recovered later through cryptographic means.
+
+**Regeneration via ECDSA Key Recovery**
+1) When a PassSeed is needed (for example, to sign a Bitcoin transaction, sign a decentralized social media post, or generate/verify a zero-knowledge proof), show a clear summary of the action and have the origin the PassSeed is bound to craft a formatted message (for example, `PassSeed ${nonce}`).  
+2) Ask the user to sign the message twice via `navigator.credentials.get()` using the same challenge and RP scope each time.  
+3) Each assertion returns a P-256 ECDSA signature. Because both signatures are over the same message, the client performs ECDSA public key recovery using the two signatures to derive the unique P-256 public key of the passkey. No private material leaves the authenticator; the app receives only the public key bytes.  
+4) The recovered public key (compressed or uncompressed form) is the PassSeed. It is reproducible on demand by repeating the double-sign ECDSA recovery flow, with no exportation of the PassSeed public key at any time.
+
+![ECDSA Public Key Recovery](../../assets/images/ecdsa-recovery.jpg)
+
+**Recovery / rotation**  
+If a device is lost, enroll a new passkey to generate a new PassSeed. Any keys derived from the old PassSeed must be rotated or re-wrapped. The mnemonic (if exported) acts as a portable backup of the seed material; the canonical source remains the passkey-derived public key via the double-sign flow.
+
+## Converting a PassSeed to a Mnemonic Phrase
+
+To make the PassSeed user-friendly, the implementation converts the 32-byte PassSeed into a standard BIP-39 mnemonic. In practice, the PassSeed is the SHA-256 hash of the recovered public key, represented as 32 bytes. Users can write down that phrase to ensure that even if something happens to their PassSeed (e.g. they accidentially delete it), they can retain access to the keys is is capable of producint. Rerunning the ECDSA recovery process with the same passkey deterministically yields the same phrase.
+
+![Mnemonic Phrase Generation](../../assets/images/mnemonic-phrases.jpg)
 
 ## Deriving Other Keys from the PassSeed
 
 Once you have the PassSeed (public key bytes or its mnemonic-derived entropy), you can deterministically derive other cryptographic material:
 
 - Bitcoin signing: use HKDF with a domain-separated label (for example, `PassSeed | secp256k1 | bitcoin main`) to produce 32 bytes, clamp to the secp256k1 field, and treat it as a private key for transaction signing.  
-- Multi-chain or app keys: derive additional context-labeled keys for different chains, environments, or apps without ever touching the passkey’s private key.  
-- ZKP credentials: derive scalar material for BLS12-381 or other proving curves, enabling deterministic prover keys or presentation keys for zero-knowledge credentials tied back to the passkey identity.  
+- App/protocol-specific keys: derive additional context-labeled keys for different apps and protocols, all from the same seed material.  
+- ZKP credentials: derive scalar material for BLS12-381 or other proving curves, enabling deterministic prover keys or presentation keys for zero-knowledge credentials.  
 - Symmetric uses: derive AES/GCM keys for sealed storage, message encryption, or envelope encryption of larger key blobs.
-
-## Flow Sketch
-
-**Enrollment**  
-1) Call `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the RP ID.  
-2) You may persist only the credential ID, user label, creation time, and other benign metadata. Do not export the public key, as it is effectively the private seed value of the PassSeed and can be recovered later through cryptographic means.
-
-**Invocation**  
-1) When an action needs authorization, show a clear summary (“sign Bitcoin transfer”, “derive ZKP key for credential presentation”).  
-2) Issue two `navigator.credentials.get()` calls over the same canonical message.  
-3) Recover the passkey’s public key via ECDSA recovery, turn it into the mnemonic if export is requested, and derive the needed child keys.  
-4) Perform the downstream crypto (Bitcoin signing, ZKP proof generation, decryption) using the derived keys while keeping the passkey private key in the authenticator.
-
-**Recovery / rotation**  
-If a device is lost, enroll a new passkey to generate a new PassSeed. Any keys derived from the old PassSeed must be rotated or re-wrapped. The mnemonic acts as an exportable backup of the seed material but still depends on the user being able to reproduce the public key via the double-sign flow.
 
 ## Implementation
 
-### Dependencies and helpers
-
-The code below uses a specific set of crypto and CBOR helpers to keep the implementation compact. You can sub out or forgo these dependencies in your own implementation, but these were the ones selected for this reference build.
-
-:::collapse{height=20rem}
-
-```typescript
-import * as bip39 from "bip39";
-import { Decoder } from "cbor-x";
-import { base64urlnopad } from "@scure/base";
-import { sha256 } from "@noble/hashes/sha2.js";
-import { p256 } from "@noble/curves/nist.js";
-import { Field, invert, mod } from "@noble/curves/abstract/modular.js";
-import { bytesToHex, bytesToNumberBE, concatBytes, hexToBytes, numberToBytesBE } from "@noble/curves/utils.js";
-
-type NoblePoint = InstanceType<typeof p256.Point>;
-
-const CURVE = p256.Point.CURVE();
-const Fp = Field(CURVE.p);
-const cborDecoder = new Decoder({ mapsAsObjects: false, useRecords: false });
-
-function seedStringFromPublicKeyBytes(publicKeyBytes: Uint8Array): string {
-  const seedBytes = sha256(publicKeyBytes);
-  return PassSeed.bytesToHex(seedBytes);
-}
-
-function decodeDerSignature(signature: ArrayBuffer): { r: bigint; s: bigint } {
-  const sig = p256.Signature.fromBytes(new Uint8Array(signature), "der");
-  return { r: sig.r, s: sig.s };
-}
-
-function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
-  const buffer = new ArrayBuffer(bytes.byteLength);
-  new Uint8Array(buffer).set(bytes);
-  return buffer;
-}
-
-function extractPublicKeyFromAttestation(attestationObject: ArrayBuffer): { x: Uint8Array; y: Uint8Array } {
-  const value = cborDecoder.decode(new Uint8Array(attestationObject));
-  if (!(value instanceof Map)) {
-    throw new Error("Attestation object must decode to a CBOR map");
-  }
-  const authData = value.get("authData");
-  if (!(authData instanceof Uint8Array)) {
-    throw new Error("Attestation object missing authData");
-  }
-
-  if (authData.length < 37) {
-    throw new Error("Authenticator data is too short");
-  }
-
-  const flags = authData[32];
-  if ((flags & 0x40) === 0) {
-    throw new Error("Attestation missing credential data");
-  }
-
-  let offset = 37;
-  offset += 16;
-  const credentialIdLength = (authData[offset] << 8) | authData[offset + 1];
-  offset += 2 + credentialIdLength;
-
-  const coseKeyBytes = authData.slice(offset);
-  const coseKey = cborDecoder.decode(coseKeyBytes);
-  if (!(coseKey instanceof Map)) {
-    throw new Error("Credential public key must decode to a CBOR map");
-  }
-  const kty = coseKey.get(1);
-  const alg = coseKey.get(3);
-  const crv = coseKey.get(-1);
-  const x = coseKey.get(-2);
-  const y = coseKey.get(-3);
-
-  if (kty !== 2 || alg !== -7 || crv !== 1) {
-    throw new Error("Unexpected credential public key parameters");
-  }
-
-  if (!(x instanceof Uint8Array) || !(y instanceof Uint8Array) || x.length !== 32 || y.length !== 32) {
-    throw new Error("Invalid credential public key coordinates");
-  }
-
-  return { x, y };
-}
-
-function recoverPublicKeys(
-  r: bigint,
-  s: bigint,
-  messageHash: Uint8Array
-): NoblePoint[] {
-  const candidates: NoblePoint[] = [];
-  const rMod = mod(r, CURVE.n);
-  const sMod = mod(s, CURVE.n);
-  const e = mod(bytesToNumberBE(messageHash), CURVE.n);
-
-  if (rMod === 0n || sMod === 0n) {
-    return candidates;
-  }
-
-  const rInv = invert(rMod, CURVE.n);
-
-  for (let j = 0; j < 2; j += 1) {
-    const x = rMod + BigInt(j) * CURVE.n;
-    if (x >= CURVE.p) {
-      continue;
-    }
-
-    const ySquared = mod(mod(x * x * x, CURVE.p) + CURVE.a * x + CURVE.b, CURVE.p);
-    let yRoot: bigint;
-    try {
-      yRoot = Fp.sqrt(ySquared);
-    } catch {
-      continue;
-    }
-
-    const yCandidates = [yRoot, mod(-yRoot, CURVE.p)];
-
-    for (const y of yCandidates) {
-      const rPointBytes = concatBytes(
-        new Uint8Array([0x04]),
-        numberToBytesBE(x, 32),
-        numberToBytesBE(y, 32)
-      );
-
-      let rPoint: NoblePoint;
-      try {
-        rPoint = p256.Point.fromBytes(rPointBytes);
-      } catch {
-        continue;
-      }
-
-      const sR = rPoint.multiply(sMod);
-      const eG = p256.Point.BASE.multiply(e);
-      const sRMinusEG = sR.add(eG.negate());
-      const q = sRMinusEG.multiply(rInv);
-      candidates.push(q);
-    }
-  }
-
-  return candidates;
-}
-
-function pointToKey(point: NoblePoint): string {
-  return PassSeed.bytesToHex(point.toBytes(false));
-}
-```
-
-:::
+The following are the code snippets for the core methods from the PassSeed TypeScript implementation, avaiable in the [PassSeed Github repo](https://github.com/csuwildcat/passseeds). Some of the methods reference helpers that are contained in the module, but are not shown here, for brevity sake.
 
 ### PassSeed.create()
 
-This method orchestrates the complete WebAuthn credential creation flow, extracting the P-256 public key from the attestation object, and hashing it into a deterministic 32-byte seed string.
+This method orchestrates the complete WebAuthn credential creation flow, extracts the credential's P-256 public key from the CBOR attestation object, and returns a hex-encoded SHA-256 hash of the public key bytes.
 
 :::collapse{height=20rem}
 
@@ -265,33 +135,9 @@ static async create(
 
 :::
 
-**What this does:** Creates a new passkey through the WebAuthn API, extracts the credential's P-256 public key from the CBOR attestation object, and returns a hex-encoded SHA-256 hash of the public key bytes.
-
-### PassSeed.toMnemonic()
-
-This method converts PassSeed bytes (or a hex string) into a human-readable BIP-39 mnemonic phrase for backup and recovery.
-
-```typescript
-static async toMnemonic(passSeed: Uint8Array | string, wordCount: 12 | 24 = 24): Promise<string> {
-  const passSeedBytes = typeof passSeed === "string" ? PassSeed.hexToBytes(passSeed) : passSeed;
-  if (passSeedBytes.length !== 32) {
-    throw new Error("PassSeed must be exactly 32 bytes");
-  }
-  if (wordCount !== 12 && wordCount !== 24) {
-    throw new Error("Mnemonic word count must be 12 or 24");
-  }
-
-  const entropyBytes = wordCount === 12 ? passSeedBytes.slice(0, 16) : passSeedBytes;
-  const entropyHex = bytesToHex(entropyBytes);
-  return bip39.entropyToMnemonic(entropyHex, bip39.wordlists.english);
-}
-```
-
-**What this does:** Accepts a 32-byte PassSeed (as bytes or hex), optionally truncates to 16 bytes for a 12-word phrase, and hands the entropy to `bip39.entropyToMnemonic` with the English wordlist.
-
 ### PassSeed.get()
 
-This method retrieves an existing passkey (optionally by credential ID), performs two WebAuthn signatures over the same challenge, recovers the public key from the signatures, and returns the hex-encoded PassSeed string.
+This method retrieves an existing passkey (optionally by credential ID), performs two WebAuthn signatures over the same challenge, reconstructs the public key via ECDSA recovery by intersecting candidate points from both signatures, and returns the hex-encoded PassSeed string.
 
 :::collapse{height=20rem}
 
@@ -390,23 +236,38 @@ static async get(credentialId?: string): Promise<string> {
 
 :::
 
-**What this does:** Prompts the user to authenticate (optionally with a targeted credential), performs two assertions over the same challenge, reconstructs the public key via ECDSA recovery by intersecting candidate points from both signatures, and hashes the recovered public key into a hex PassSeed.
+### PassSeed.toMnemonic()
+
+This method converts a 32-byte PassSeed (as bytes or hex) into a human-readable BIP-39 mnemonic phrase for backup and recovery, optionally truncating to 16 bytes for a 12-word phrase before handing entropy to `bip39.entropyToMnemonic` with the English wordlist.
+
+```typescript
+static async toMnemonic(passSeed: Uint8Array | string, wordCount: 12 | 24 = 24): Promise<string> {
+  const passSeedBytes = typeof passSeed === "string" ? PassSeed.hexToBytes(passSeed) : passSeed;
+  if (passSeedBytes.length !== 32) {
+    throw new Error("PassSeed must be exactly 32 bytes");
+  }
+  if (wordCount !== 12 && wordCount !== 24) {
+    throw new Error("Mnemonic word count must be 12 or 24");
+  }
+
+  const entropyBytes = wordCount === 12 ? passSeedBytes.slice(0, 16) : passSeedBytes;
+  const entropyHex = bytesToHex(entropyBytes);
+  return bip39.entropyToMnemonic(entropyHex, bip39.wordlists.english);
+}
+```
 
 ## Threat Model and Constraints
 
-The authenticator still enforces RP binding and user verification before issuing signatures, so phishing resistance mirrors standard passkeys. The host page sees two signatures and the recovered public key; handling must assume the host can exfiltrate those values. Because the same message is signed twice, replay risk is mitigated by including nonces, RP ID, and a strict prefix so signatures cannot be repurposed. Syncable passkeys inherit the platform’s sync trust model, and attestation remains optional. Downgrade paths (password fallback, non-UV requests) should be disabled to avoid bypassing the PassSeed gate.
+The authenticator still enforces RP binding and user verification before issuing signatures, so phishing resistance mirrors standard passkeys. The host page sees two signatures and the recovered public key, values one must assume the host can exfiltrate. Because the same message is signed twice, replay risk is mitigated by including nonces, RP ID, and a strict prefix so signatures cannot be repurposed. Syncable passkeys inherit the platform’s end-to-end encrypted sync features.
 
-## Candidate Use Cases
+## Why not use the WebAuthn's PRF or Large Blob features?
 
-- Passkey-gated Bitcoin wallet: derive a secp256k1 key for transaction signing without ever exporting a hot seed.  
-- Deterministic ZKP credential agent: derive proving keys tied to the passkey so credential presentations require the same user-verified prompts.  
-- Sealed personal storage: encrypt data to a symmetric key derived from the PassSeed so only a verified passkey invocation can decrypt.  
-- Multi-party controls: require multiple PassSeeds (from different RP IDs or devices) to derive separate shares that unlock a combined operation.
+The WebAuthn specification has defined a [PRF extension](https://w3c.github.io/webauthn/#test-vectors-extensions-prf) for deterministically generating per-credential secrets, and a [Large Blob extension](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#largeblob), which you could use to encrypt and save a randomly generated secret that is synced across the user's devices, both of which could achieve the desired ends. The problem is API support: PRF and Large Blob features are not implemented across browsers today, and there is no signal that either will be in the near future. That makes it hard to rely on in production if you need your app to work everywhere.
 
-## Open Questions
+PassSeeds can even be used to create a polyfill for the PRF API. By deterministically recovering a stable cryptographic value from the passkey signature flow (the public key), you can use that value to generate deterministic cryptographic values based on input values, which will regenerate the same value for the same input every time. If the tradeoffs of PassSeeds are acceptable, you can integrate PRF-reliant use cases in apps today, across all browsers. I plan on writing a PRF polyfill soon, so stay tuned.
 
-How portable is double-sign-based recovery across platform authenticators, and will any enforce nonce uniqueness that prevents repeated signing of the same message? Can RP binding policies be shared across multiple apps without weakening origin checks? What assurance do we have that public key recovery on P-256 is reliable across vendor implementations and signature formats?
+## Demo & NPM Package
 
-## Next Steps
+The following is a demo page that allows you to create PassSeeds, reload the page to test regeneration (via the ECDSA recovery process), and view the Mnemonic phrase of PassSeeds you've created: [PassSeeds Demo](https://backalleycoder.com/passseeds/)
 
-Prototype the double-sign recovery flow in a browser demo and validate that P-256 public key recovery works consistently across major platforms. Build the deterministic mnemonic export and HKDF-based derivations for secp256k1 and ZKP keys, then threat-model replay and misuse of the recovered public key.
+You can also include PassSeeds in your Web apps via NPM: [PassSeeds NPM Package](https://www.npmjs.com/package/passseeds)
