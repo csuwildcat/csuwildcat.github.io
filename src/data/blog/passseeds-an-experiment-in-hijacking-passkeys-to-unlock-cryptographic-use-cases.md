@@ -5,23 +5,23 @@ draft: true
 featured: true
 author: 'Daniel Buchner'
 tags:
-  - passkeys
+  - Passkeys
   - WebAuthn
   - cryptography
   - identity
   - key management
-description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases to inherit the benefits of cross-device synced keys with native biomentric UX.
+description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases, while inheriting the benefits of cross-device synced keys with native biomentric UX.
 ---
 
 When I was at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is largely restricted to the website/app login use case.
 
 PassSeeds is a hack that explores this question: can we hijack the capabilties and user experience of Passkeys to apply it to use cases that strech beyond its rigid model and limited key type support, where the status quo is often users pasting key material into sites/apps, or buying special hardware devices that can be difficult for less technical folks to deal with?
 
-I had deep technical, code-level understanding of the entire surface area for Passkeys and WebAuthn, but it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. In retrospect, it was sitting right in front of me, and seems so obvious - just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and unexpected results.
+Even with a deep, code-level understanding of Passkeys and WebAuthn, it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. It was sitting right there and seems so obvious in retrospect - guess it just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and unexpected results.
 
 ## The Skinny on Passkeys
 
-To understand PassSeeds, it helps to have some awareness of the underlying Passkey technology they are based on.
+To understand PassSeeds it helps to have some awareness of the underlying Passkey technology they are based on.
 
 ::image[Passkey Logo]{src="/src/assets/images/passkey-logo.jpg" maxWidth="300px"}
 
@@ -142,7 +142,11 @@ This method retrieves an existing passkey (optionally by credential ID), perform
 :::collapse{height=20rem}
 
 ```typescript
-static async get(credentialId?: string): Promise<string> {
+static async get(options: PassSeedGetOptions = {}): Promise<string> {
+  if (options != null && typeof options !== "object") {
+    throw new Error("PassSeed.get expects an options object when parameters are provided");
+  }
+  const { credentialId, onBeforeSecondSignature } = options ?? {};
   // Step 1: Prepare a single challenge that both assertions will sign
   const challenge = crypto.getRandomValues(new Uint8Array(32));
   
@@ -178,6 +182,10 @@ static async get(credentialId?: string): Promise<string> {
   const usedCredentialId = credentialId
     ? toArrayBuffer(base64urlnopad.decode(credentialId))
     : assertion1.rawId;
+
+  if (onBeforeSecondSignature) {
+    await onBeforeSecondSignature();
+  }
 
   // Step 3: Second signature over the same challenge
   assertionOptions.publicKey!.challenge = challenge;
