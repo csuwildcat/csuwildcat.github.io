@@ -3,17 +3,29 @@ import { visit } from "unist-util-visit";
 
 type DirectiveAttributes = Record<string, string | null | undefined>;
 
-type HastNode =
-  | {
-      type: "element";
-      tagName: string;
-      properties?: Record<string, unknown>;
-      children?: HastNode[];
-    }
-  | {
-      type: "text";
-      value: string;
-    };
+type TextNode = {
+  type: "text";
+  value: string;
+};
+
+type ParagraphNode = {
+  type: "paragraph";
+  children?: MdastNode[];
+  data?: {
+    hName?: string;
+    hProperties?: Record<string, unknown>;
+  };
+};
+
+type ImageNode = {
+  type: "image";
+  url: string;
+  alt?: string | null;
+  title?: string | null;
+  data?: {
+    hProperties?: Record<string, unknown>;
+  };
+};
 
 type DirectiveNode = {
   type: string;
@@ -22,10 +34,12 @@ type DirectiveNode = {
   data?: {
     hName?: string;
     hProperties?: Record<string, unknown>;
-    hChildren?: HastNode[];
+    hChildren?: unknown[];
   };
-  children?: DirectiveNode[];
+  children?: MdastNode[];
 };
+
+type MdastNode = DirectiveNode | ImageNode | ParagraphNode | TextNode;
 
 const IMAGE_DIRECTIVE_NAMES = new Set(["image", "img"]);
 
@@ -54,6 +68,17 @@ const normalizeCssSize = (value: string | undefined) => {
 const splitClasses = (value: string | undefined) =>
   value ? value.split(/\s+/).filter(Boolean) : [];
 
+const normalizeAssetSrc = (value: string) => {
+  const trimmed = value.trim();
+  if (trimmed.startsWith("/src/assets/")) {
+    return `@/assets/${trimmed.slice("/src/assets/".length)}`;
+  }
+  if (trimmed.startsWith("src/assets/")) {
+    return `@/assets/${trimmed.slice("src/assets/".length)}`;
+  }
+  return trimmed;
+};
+
 export default function remarkImageDirective() {
   return (tree: unknown) => {
     visit(tree as DirectiveNode, node => {
@@ -62,7 +87,8 @@ export default function remarkImageDirective() {
       }
 
       const attrs = node.attributes ?? {};
-      const src = getAttr(attrs, "src", "url", "href");
+      const rawSrc = getAttr(attrs, "src", "url", "href");
+      const src = rawSrc ? normalizeAssetSrc(rawSrc) : undefined;
       if (!src) {
         return;
       }
@@ -86,45 +112,40 @@ export default function remarkImageDirective() {
         figureProps.style = `max-width:${maxWidth};`;
       }
 
-      const imgProps: Record<string, unknown> = {
-        src,
-        alt: alt ?? "",
-      };
-
       const title = getAttr(attrs, "title");
-      if (title) imgProps.title = title;
 
       const loading = getAttr(attrs, "loading");
-      if (loading) imgProps.loading = loading;
 
       const decoding = getAttr(attrs, "decoding");
-      if (decoding) imgProps.decoding = decoding;
 
       const width = getAttr(attrs, "width");
-      if (width) imgProps.width = width;
 
       const height = getAttr(attrs, "height");
-      if (height) imgProps.height = height;
 
       const imgClass = splitClasses(getAttr(attrs, "imgClass", "img-class"));
-      if (imgClass.length > 0) {
-        imgProps.className = imgClass;
+      const imgProps: Record<string, unknown> = {};
+      if (loading) imgProps.loading = loading;
+      if (decoding) imgProps.decoding = decoding;
+      if (width) imgProps.width = width;
+      if (height) imgProps.height = height;
+      if (imgClass.length > 0) imgProps.className = imgClass;
+
+      const imageNode: ImageNode = {
+        type: "image",
+        url: src,
+        alt: alt ?? "",
+        title: title ?? null,
+      };
+      if (Object.keys(imgProps).length > 0) {
+        imageNode.data = { hProperties: imgProps };
       }
 
-      const children: HastNode[] = [
-        {
-          type: "element",
-          tagName: "img",
-          properties: imgProps,
-          children: [],
-        },
-      ];
+      const children: MdastNode[] = [imageNode];
 
       if (caption) {
         children.push({
-          type: "element",
-          tagName: "figcaption",
-          properties: {},
+          type: "paragraph",
+          data: { hName: "figcaption" },
           children: [{ type: "text", value: caption }],
         });
       }
@@ -132,9 +153,11 @@ export default function remarkImageDirective() {
       const data = node.data ?? (node.data = {});
       data.hName = "figure";
       data.hProperties = figureProps;
-      data.hChildren = children;
 
-      node.children = [];
+      if ("hChildren" in data) {
+        delete data.hChildren;
+      }
+      node.children = children;
     });
   };
 }
