@@ -52,7 +52,7 @@ Passkeys provide biometrically-gated use of cryptographic keys, but they were ri
 **Assumptions:** you have created a passkey, did not export the public key anywhere at generation time, and do not allow any signatures from the passkey outside of the generating origin's local boundary.
 
 **Initial Generation**  
-1) Call `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the generating origin's RP ID.  
+1) Calls `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the generating origin's RP ID.  
 2) The initial passkey creation operation is the only API call where the platform returns the public key, but DO NOT export the public key, as it is effectively the private seed value of the PassSeed and can be recovered later through cryptographic means.
 
 **Regeneration via ECDSA Key Recovery**
@@ -64,7 +64,7 @@ Passkeys provide biometrically-gated use of cryptographic keys, but they were ri
 ![ECDSA Public Key Recovery](../../assets/images/ecdsa-recovery.jpg)
 
 **Recovery / rotation**  
-If a device is lost, enroll a new passkey to generate a new PassSeed. Any keys derived from the old PassSeed must be rotated or re-wrapped. The mnemonic (if exported) acts as a portable backup of the seed material; the canonical source remains the passkey-derived public key via the double-sign flow.
+If a device is lost, but other devices with the passkey that backs the PassSeed are still available, any new device added to the accout of the user will have their PassSeed automatically synced upon device enrollment, which is a process handled by the native platform. If all devices with the backing passkey are lost, you can still access and control whatever was tied to your PassSeed via the exported mnemonic phrase, if you elected to do that (which is strongly recommeded). Because PassSeeds and their backing Passkeys cannot be imported into the Passkey mechanism, if you lose all devices with the backing Passkey, you will need to transfer anything tied to the old PassSeed to a new one on your active devices (again, assuming you backed up your PassSeed via exporting its mnemonic phrase).
 
 ## Converting a PassSeed to a Mnemonic Phrase
 
@@ -77,7 +77,7 @@ To make the PassSeed user-friendly, the implementation converts the 32-byte Pass
 Once you have the PassSeed (public key bytes or its mnemonic-derived entropy), you can deterministically derive other cryptographic material:
 
 - Bitcoin signing: use HKDF with a domain-separated label (for example, `PassSeed | secp256k1 | bitcoin main`) to produce 32 bytes, clamp to the secp256k1 field, and treat it as a private key for transaction signing.  
-- App/protocol-specific keys: derive additional context-labeled keys for different apps and protocols, all from the same seed material.  
+- App/protocol-specific keys: derive additional context-labeled keys for different apps and protocols (decentarlized social media), all from the same seed material.  
 - ZKP credentials: derive scalar material for BLS12-381 or other proving curves, enabling deterministic prover keys or presentation keys for zero-knowledge credentials.  
 - Symmetric uses: derive AES/GCM keys for sealed storage, message encryption, or envelope encryption of larger key blobs.
 
