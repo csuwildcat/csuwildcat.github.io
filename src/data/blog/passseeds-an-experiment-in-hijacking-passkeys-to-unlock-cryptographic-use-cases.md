@@ -11,6 +11,7 @@ tags:
   - identity
   - key management
 description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases, while inheriting the benefits of cross-device synced keys with native biomentric UX.
+ogImage: ../../assets/images/passseed-logo.jpg
 ---
 
 In my time at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the model is tightly restricted to website/app login.
