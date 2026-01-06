@@ -1,7 +1,7 @@
 ---
 title: 'PassSeeds - Hijacking Passkeys to Unlock Cryptographic Use Cases'
 pubDatetime: 2025-12-26T16:35:11Z
-draft: true
+draft: false
 featured: true
 author: 'Daniel Buchner'
 tags:
@@ -13,11 +13,11 @@ tags:
 description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases, while inheriting the benefits of cross-device synced keys with native biomentric UX.
 ---
 
-When I was at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is largely restricted to the website/app login use case.
+When I was at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is tightly restricted to the website/app login use case.
 
 PassSeeds is a hack that explores this question: can we hijack the capabilties and user experience of Passkeys to apply it to use cases that strech beyond its rigid model and limited key type support, where the status quo is often users pasting key material into sites/apps, or buying special hardware devices that can be difficult for less technical folks to deal with?
 
-Even with a deep, code-level understanding of Passkeys and WebAuthn, it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. It was sitting right there and seems so obvious in retrospect - guess it just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and unexpected results.
+Even with a deep, code-level understanding of Passkeys and WebAuthn, it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. It was sitting right there and seems so obvious in retrospect - guess it just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and interesting results.
 
 ## The Skinny on Passkeys
 

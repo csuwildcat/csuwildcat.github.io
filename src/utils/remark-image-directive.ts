@@ -56,7 +56,7 @@ const splitClasses = (value: string | undefined) =>
 
 export default function remarkImageDirective() {
   return (tree: unknown) => {
-    visit(tree as DirectiveNode, "leafDirective", node => {
+    visit(tree as DirectiveNode, node => {
       if (!IMAGE_DIRECTIVE_NAMES.has(node.name ?? "")) {
         return;
       }
