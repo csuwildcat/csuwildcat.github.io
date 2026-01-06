@@ -13,19 +13,19 @@ tags:
 description: An exploration in using Passkeys as generalized cryptographic seed material to address new use cases, while inheriting the benefits of cross-device synced keys with native biomentric UX.
 ---
 
-When I was at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the Passkey model is tightly restricted to the website/app login use case.
+In my time at Microsoft, I worked on the team responsible for the development and standardization of Passkeys. [Passkeys](https://www.passkeys.io/) have made standard, secure, cryptographic authentication [accessible to all users](https://www.passkeys.io/who-supports-passkeys), but the model is tightly restricted to website/app login.
 
-PassSeeds is a hack that explores this question: can we hijack the capabilties and user experience of Passkeys to apply it to use cases that strech beyond its rigid model and limited key type support, where the status quo is often users pasting key material into sites/apps, or buying special hardware devices that can be difficult for less technical folks to deal with?
+Even with a deep, code-level understanding of passkeys and WebAuthn, it wasn't until now, six years later, that I realized a set of properties and behaviors present within Passkeys could be hijacked to make this post possible. This 'feature' was sitting right there and feels so obvious in retrospect. It just goes to show if you remain curious and turn over every rock, you can bend technology to do new and interesting things.
 
-Even with a deep, code-level understanding of Passkeys and WebAuthn, it wasn't until now, 6 years later, that I realized an interesting set of properties and behaviors of Passkeys could be hijacked to make PassSeeds possible. It was sitting right there and seems so obvious in retrospect - guess it just goes to show that if you stay curious and turn over every rock, you can often bend technology to produce new and interesting results.
+PassSeeds is a hack that explores this question: can we hijack the capabilities and UX of passkeys for use cases that stretch beyond their rigid login model and limited key-type support? The status quo of many Web-based use cases involving long-held cryptographic keys is often users pasting key material into sites/apps or buying special hardware devices that are difficult for less technical folks to use.
 
-## The Skinny on Passkeys
+## Booting Up On Passkeys
 
-To understand PassSeeds it helps to have some awareness of the underlying Passkey technology they are based on.
+To understand PassSeeds, it helps to have some awareness of the underlying Passkey technology they are based on.
 
 ::image[Passkey Logo]{src="/src/assets/images/passkey-logo.jpg" maxWidth="300px"}
 
-Passkeys are asymmetric key pairs in the format of [WebAuthn credentials](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API), typically used for replacing passwords as the way users log into websites. A key pair is created on the user's device for a website and stored in a secure hardware module on the device. Access to and usage of these key pairs is scoped to the [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin) of the site they were created on (examples of different origins: `example.com`, `other.example.com`, `test.com`). Passkeys are replicated across a user's devices by the platform (iCloud Keychain, Google Password Manager, Windows Hello, etc.) via an end-to-end encrypted sync process. This is a basic overview of the two primary UX flows for generating a passkey and using one for login:
+Passkeys are asymmetric key pairs formatted as [WebAuthn credentials](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API), typically used to replace passwords for website logins. A key pair is created on the user's device for a website and stored in a secure hardware module. Access to and usage of these key pairs is scoped to the [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin) of the site they were created on (for example: `example.com`, `other.example.com`, `test.com`). Passkeys are replicated across a user's devices by the platform (iCloud Keychain, Google Password Manager, Windows Hello, etc.) via an end-to-end encrypted sync process. Below is a basic overview of the two primary UX flows for generating a passkey and using one for login:
 
 ::image[Passkey generation and signing flows]{src="/src/assets/images/passkey-flows.jpg" maxWidth="600px" caption="Passkey generation and signing flows"}
 
@@ -34,16 +34,16 @@ Passkeys are asymmetric key pairs in the format of [WebAuthn credentials](https:
 There are several attributes of Passkeys to keep in mind that are critical to the PassSeed mechanism detailed in this post:
 
 - Passkeys are key pair + metadata bundles that are securely stored and synced across a user's devices by OS/platform
-- The private AND *public* key are both stored and synced across devices as one highly sensitive bundle
+- The private and *public* key are both stored and synced across devices as one highly sensitive bundle
 - If you never store it at generation time and do not allow signatures from its private key out of the generating origin's boundary, no API, metadata, or side-channel reveals the *public* key.
 
 Given these attributes of the Passkey model, even *public* keys in the system behave like a natively provisioned, hardware-secured, synced secret, even though cryptography does not require them to be secret. This is a rare and valuable set of properties many products, services, and protocols find highly desirable.
 
 ## Introducing PassSeeds
 
-::image[Passkey Logo]{src="/src/assets/images/passseed-logo.jpg" maxWidth="500px"}
+::image[Passkey Logo]{src="/src/assets/images/passseed-logo.jpg" maxWidth="420px"}
 
-Passkeys provide biometrically-gated use of cryptographic keys, but they were rigidly created for authentication signing within centralized website login flows. Meanwhile, Web-based apps that require types of cryptographic material and uses Passkeys do not support (`secp256k1` for Bitcoin, `BLS12-381` for ZKP use, etc.) remain primitive and convoluted: users copying 12-24 words, stashing JSON keystores, or pasting raw keys across apps. PassSeeds introduces a novel approach: treat the passkey’s P-256 public key *itself* as seed material and retrieve it on demand through ECDSA public key recovery. The authenticator still keeps the private key and user-verification requirements, but the recovered public key bytes become the deterministic 'PassSeed' that can be used as the foundation to power other cryptographic use cases.
+Passkeys provide biometrically gated use of cryptographic keys, but they were created specifically for authentication signing in centralized website login flows. Meanwhile, web apps that need cryptographic material and curves that passkeys don’t support (`secp256k1` for Bitcoin, `BLS12-381` for ZKPs, etc.) remain primitive and convoluted. Users copy 12–24 words, stash JSON keystores, or paste raw keys across apps. PassSeeds introduces a novel approach: treat the passkey’s P‑256 public key itself as seed material and retrieve it on demand through ECDSA public‑key recovery. The authenticator still keeps the private key and user‑verification requirements, but the recovered public‑key bytes become the deterministic PassSeed that can serve as the foundation for other cryptographic use cases.
 
 (If you don't want to understand how it works, you can skip to the [DEMO](https://backalleycoder.com/passseeds/))
 
@@ -52,23 +52,24 @@ Passkeys provide biometrically-gated use of cryptographic keys, but they were ri
 **Assumptions:** you have created a passkey, did not export the public key anywhere at generation time, and do not allow any signatures from the passkey outside of the generating origin's local boundary.
 
 **Initial Generation**  
-1) Calls `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the generating origin's RP ID.  
+1) Call `navigator.credentials.create()` with `userVerification: required` to mint a P-256 passkey scoped to the generating origin's RP ID.  
 2) The initial passkey creation operation is the only API call where the platform returns the public key, but DO NOT export the public key, as it is effectively the private seed value of the PassSeed and can be recovered later through cryptographic means.
+3) Use the returned public key to generate the cryptographic seed bytes.
 
 **Regeneration via ECDSA Key Recovery**
-1) When a PassSeed is needed (for example, to sign a Bitcoin transaction, sign a decentralized social media post, or generate/verify a zero-knowledge proof), show a clear summary of the action and have the origin the PassSeed is bound to craft a formatted message (for example, `PassSeed ${nonce}`).  
-2) Ask the user to sign the message twice via `navigator.credentials.get()` using the same challenge and RP scope each time.  
-3) Each assertion returns a P-256 ECDSA signature. Because both signatures are over the same message, the client performs ECDSA public key recovery using the two signatures to derive the unique P-256 public key of the passkey. No private material leaves the authenticator; the app receives only the public key bytes.  
-4) The recovered public key (compressed or uncompressed form) is the PassSeed. It is reproducible on demand by repeating the double-sign ECDSA recovery flow, with no exportation of the PassSeed public key at any time.
+1) When a PassSeed is needed (for example, to sign a Bitcoin transaction, sign a decentralized social media post, or generate/verify a zero-knowledge proof), craft a message (for example, `PassSeed ${nonce}`) for signing with the passkey.  
+2) Ask the user to sign the message twice via `navigator.credentials.get()` using the same message and RP scope each time.
+3) Each assertion returns a P-256 ECDSA signature. Because both signatures are over the same message, client code can perform ECDSA public key recovery using the two signatures to derive the unique P-256 public key of the passkey. No private material leaves the authenticator, and the app receives only the public key bytes.  
+4) The recovered public key (in compressed or uncompressed form) is the PassSeed. It is reproducible on-demand by repeating the double-sign ECDSA recovery flow, with no exportation of the PassSeed public key at any time.
 
 ![ECDSA Public Key Recovery](../../assets/images/ecdsa-recovery.jpg)
 
-**Recovery / rotation**  
+**Recovery / Rotation**  
 If a device is lost, but other devices with the passkey that backs the PassSeed are still available, any new device added to the accout of the user will have their PassSeed automatically synced upon device enrollment, which is a process handled by the native platform. If all devices with the backing passkey are lost, you can still access and control whatever was tied to your PassSeed via the exported mnemonic phrase, if you elected to do that (which is strongly recommeded). Because PassSeeds and their backing Passkeys cannot be imported into the Passkey mechanism, if you lose all devices with the backing Passkey, you will need to transfer anything tied to the old PassSeed to a new one on your active devices (again, assuming you backed up your PassSeed via exporting its mnemonic phrase).
 
 ## Converting a PassSeed to a Mnemonic Phrase
 
-To make the PassSeed user-friendly, the implementation converts the 32-byte PassSeed into a standard BIP-39 mnemonic. In practice, the PassSeed is the SHA-256 hash of the recovered public key, represented as 32 bytes. Users can write down that phrase to ensure that even if something happens to their PassSeed (e.g. they accidentially delete it), they can retain access to the keys is is capable of producint. Rerunning the ECDSA recovery process with the same passkey deterministically yields the same phrase.
+To make the PassSeed user-friendly, the implementation converts the 32-byte PassSeed into a standard BIP-39 mnemonic. In practice, the PassSeed is the SHA-256 hash of the recovered public key, represented as 32 bytes. Users can write down the phrase to ensure that even if something happens to their PassSeed (e.g. they accidentially delete it), they can retain access to the keys it is capable of producing. Rerunning the ECDSA recovery process with the same passkey deterministically yields the same phrase.
 
 ![Mnemonic Phrase Generation](../../assets/images/mnemonic-phrases.jpg)
 
@@ -76,14 +77,13 @@ To make the PassSeed user-friendly, the implementation converts the 32-byte Pass
 
 Once you have the PassSeed (public key bytes or its mnemonic-derived entropy), you can deterministically derive other cryptographic material:
 
-- Bitcoin signing: use HKDF with a domain-separated label (for example, `PassSeed | secp256k1 | bitcoin main`) to produce 32 bytes, clamp to the secp256k1 field, and treat it as a private key for transaction signing.  
-- App/protocol-specific keys: derive additional context-labeled keys for different apps and protocols (decentarlized social media), all from the same seed material.  
-- ZKP credentials: derive scalar material for BLS12-381 or other proving curves, enabling deterministic prover keys or presentation keys for zero-knowledge credentials.  
-- Symmetric uses: derive AES/GCM keys for sealed storage, message encryption, or envelope encryption of larger key blobs.
+- Bitcoin signing: use an HKDF with a domain-separated label to produce 32 bytes, clamped to the secp256k1 field, and treat it as a private key for transaction signing.
+- App/protocol-specific keys: derive additional context-labeled keys for different apps and protocols that use keys as identifiers (decentarlized social media), all from the same seed material.  
+- ZKP credentials: derive scalar material for `BLS12-381` or other proving curves, enabling deterministic prover keys or presentation keys for zero-knowledge credentials.
 
 ## Implementation
 
-The following are the code snippets for the core methods from the PassSeed TypeScript implementation, avaiable in the [PassSeed Github repo](https://github.com/csuwildcat/passseeds). Some of the methods reference helpers that are contained in the module, but are not shown here, for brevity sake.
+The following are the code snippets for the core methods from the PassSeed TypeScript implementation, avaiable in the [PassSeed Github repo](https://github.com/csuwildcat/passseeds). Some of the methods reference helpers that are contained in the module, but are not shown here, for brevity.
 
 ### PassSeed.create()
 
@@ -270,9 +270,9 @@ The authenticator still enforces RP binding and user verification before issuing
 
 ## Why not use the WebAuthn's PRF or Large Blob features?
 
-The WebAuthn specification has defined a [PRF extension](https://w3c.github.io/webauthn/#test-vectors-extensions-prf) for deterministically generating per-credential secrets, and a [Large Blob extension](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#largeblob), which you could use to encrypt and save a randomly generated secret that is synced across the user's devices, both of which could achieve the desired ends. The problem is API support: PRF and Large Blob features are not implemented across browsers today, and there is no signal that either will be in the near future. That makes it hard to rely on in production if you need your app to work everywhere.
+The WebAuthn specification has defined a [PRF extension](https://w3c.github.io/webauthn/#test-vectors-extensions-prf) for deterministically generating per-credential secrets, and a [Large Blob extension](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#largeblob), which can be used to encrypt and save a randomly generated secret that is synced across the user's devices, both of which could achieve the desired ends. The problem is API support: PRF and Large Blob features are not implemented across browsers today, and there is no signal that either will be in the near future. That makes it hard to rely on in production if you need your app to work everywhere.
 
-PassSeeds can even be used to create a polyfill for the PRF API. By deterministically recovering a stable cryptographic value from the passkey signature flow (the public key), you can use that value to generate deterministic cryptographic values based on input values, which will regenerate the same value for the same input every time. If the tradeoffs of PassSeeds are acceptable, you can integrate PRF-reliant use cases in apps today, across all browsers. I plan on writing a PRF polyfill soon, so stay tuned.
+PassSeeds can even be used to create a polyfill for the PRF feature: by deterministically recovering a stable cryptographic value from the passkey signature flow (the public key), you can use that value to generate deterministic, cryptographic values based on input values, which will regenerate the same value for the same input, every time. If the tradeoffs of PassSeeds are acceptable, you can integrate PRF-reliant use cases in apps today, across all browsers. I plan on writing a PRF polyfill soon, so stay tuned.
 
 ## Demo & NPM Package
 
