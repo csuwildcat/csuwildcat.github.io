@@ -2,6 +2,7 @@ export const SITE = {
   website: "https://csuwildcat.github.io/", // GitHub Pages URL for your username
   author: "Daniel Buchner",
   profile: "https://csuwildcat.github.io/about",
+  twitterHandle: "@csuwildcat",
   desc: "Code, distributed systems, and the web.",
   title: "Back Alley Coder",
   ogImage: "astropaper-og.jpg",

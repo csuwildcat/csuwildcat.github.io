@@ -13,6 +13,12 @@ export interface Props {
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
+  ogType?: "website" | "article";
+  ogImageAlt?: string;
+  articleTags?: string[];
+  twitterCard?: "summary" | "summary_large_image" | "app" | "player";
+  twitterSite?: string;
+  twitterCreator?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
@@ -24,17 +30,40 @@ const {
   profile = SITE.profile,
   description = SITE.desc,
   ogImage = SITE.ogImage ? `/${SITE.ogImage}` : "/og.png",
-  canonicalURL = new URL(Astro.url.pathname, Astro.url),
+  canonicalURL = new URL(Astro.url.pathname, Astro.url).toString(),
+  ogType,
+  ogImageAlt,
+  articleTags = [],
+  twitterCard = "summary_large_image",
+  twitterSite = SITE.twitterHandle,
+  twitterCreator = SITE.twitterHandle,
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
 } = Astro.props;
 
-const socialImageURL = new URL(ogImage, Astro.url);
+const resolvedCanonicalURL = new URL(canonicalURL, Astro.url).toString();
+const socialImageURL = new URL(ogImage, Astro.url).toString();
+const resolvedOgType = ogType ?? (pubDatetime ? "article" : "website");
+const resolvedOgImageAlt = ogImageAlt ?? `Social preview image for ${title}`;
+const ogLocale = SITE.lang?.includes("-")
+  ? SITE.lang.replace("-", "_")
+  : SITE.lang === "en"
+    ? "en_US"
+    : (SITE.lang ?? "en_US");
+
+const ogImageMimeType = (() => {
+  const pathname = new URL(socialImageURL).pathname.toLowerCase();
+  if (pathname.endsWith(".png")) return "image/png";
+  if (pathname.endsWith(".jpg") || pathname.endsWith(".jpeg")) return "image/jpeg";
+  if (pathname.endsWith(".webp")) return "image/webp";
+  if (pathname.endsWith(".gif")) return "image/gif";
+  return undefined;
+})();
 
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "BlogPosting",
+  "@type": resolvedOgType === "article" ? "BlogPosting" : "WebPage",
   headline: `${title}`,
   image: `${socialImageURL}`,
   datePublished: `${pubDatetime?.toISOString()}`,
@@ -55,7 +84,7 @@ const structuredData = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonicalURL} />
+    <link rel="canonical" href={resolvedCanonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
     <!-- General Meta Tags -->
@@ -66,13 +95,20 @@ const structuredData = {
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={resolvedOgType} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:url" content={resolvedCanonicalURL} />
     <meta property="og:image" content={socialImageURL} />
+    <meta property="og:image:secure_url" content={socialImageURL} />
+    <meta property="og:image:alt" content={resolvedOgImageAlt} />
+    {ogImageMimeType && <meta property="og:image:type" content={ogImageMimeType} />}
 
     <!-- Article Published/Modified time -->
     {
+      resolvedOgType === "article" &&
       pubDatetime && (
         <meta
           property="article:published_time"
@@ -81,6 +117,7 @@ const structuredData = {
       )
     }
     {
+      resolvedOgType === "article" &&
       modDatetime && (
         <meta
           property="article:modified_time"
@@ -88,13 +125,21 @@ const structuredData = {
         />
       )
     }
+    {resolvedOgType === "article" && <meta property="article:author" content={author} />}
+    {
+      resolvedOgType === "article" &&
+      articleTags.map(tag => <meta property="article:tag" content={tag} />)
+    }
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={socialImageURL} />
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:url" content={resolvedCanonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL} />
+    <meta name="twitter:image:alt" content={resolvedOgImageAlt} />
+    {twitterSite && <meta name="twitter:site" content={twitterSite} />}
+    {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
 
     <!-- Google JSON-LD Structured data -->
     <script
