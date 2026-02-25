@@ -26,7 +26,14 @@
       currentPosition = { left: 0, top: 0, width: 0, height: 0 };
     }
 
-    function handleImageClick(event) {
+    function isZoomableImage(img, zoomedImage) {
+      if (!(img instanceof HTMLImageElement) || img === zoomedImage) return false;
+      if (img.hasAttribute('data-no-zoom')) return false;
+      if (img.closest('a[href], [data-no-zoom]')) return false;
+      return true;
+    }
+
+    function handleImageClick(event, img) {
       event.preventDefault();
       event.stopPropagation();
       
@@ -36,7 +43,6 @@
       const zoomedImage = getZoomedImage();
       if (!overlay || !zoomedImage) return;
       
-      const img = event.target;
       currentOriginalImage = img;
       
       // Reset state
@@ -187,10 +193,16 @@
       
       const zoomedImage = getZoomedImage();
       const overlay = getOverlay();
+      const clickedImage =
+        event.target instanceof HTMLImageElement
+          ? event.target
+          : event.target instanceof Element
+            ? event.target.closest('img')
+            : null;
       
-      // Handle image clicks to zoom (exclude the zoomed image itself)
-      if (event.target.tagName === 'IMG' && event.target !== zoomedImage) {
-        handleImageClick(event);
+      // Handle image clicks to zoom (but skip linked/no-zoom images)
+      if (clickedImage && isZoomableImage(clickedImage, zoomedImage)) {
+        handleImageClick(event, clickedImage);
         return;
       }
       
@@ -251,9 +263,13 @@
     pointer-events: auto;
   }
 
-  /* Make all images clickable */
+  /* Keep zoom transition subtle across images */
   :global(img) {
-    cursor: pointer;
     transition: transform 0.2s ease;
+  }
+
+  /* Only show zoom cursor on zoomable images */
+  :global(img:not([data-no-zoom])) {
+    cursor: pointer;
   }
 </style>

@@ -68,6 +68,12 @@ const normalizeCssSize = (value: string | undefined) => {
 const splitClasses = (value: string | undefined) =>
   value ? value.split(/\s+/).filter(Boolean) : [];
 
+const isTruthyAttr = (value: string | undefined) => {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
+};
+
 const normalizeAssetSrc = (value: string) => {
   const trimmed = value.trim();
   if (trimmed.startsWith("/src/assets/")) {
@@ -123,12 +129,27 @@ export default function remarkImageDirective() {
       const height = getAttr(attrs, "height");
 
       const imgClass = splitClasses(getAttr(attrs, "imgClass", "img-class"));
+      const disableImageZoom = isTruthyAttr(
+        getAttr(
+          attrs,
+          "data-no-zoom",
+          "noZoom",
+          "no-zoom",
+          "data-disable-image-zoom",
+          "disableImageZoom",
+          "disable-image-zoom"
+        )
+      );
       const imgProps: Record<string, unknown> = {};
       if (loading) imgProps.loading = loading;
       if (decoding) imgProps.decoding = decoding;
       if (width) imgProps.width = width;
       if (height) imgProps.height = height;
       if (imgClass.length > 0) imgProps.className = imgClass;
+      if (disableImageZoom) {
+        figureProps["data-no-zoom"] = "true";
+        imgProps["data-no-zoom"] = "true";
+      }
 
       const imageNode: ImageNode = {
         type: "image",
