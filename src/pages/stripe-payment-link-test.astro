@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { SITE } from "@/config";
+---
+
+<Layout
+  title={`Stripe Payment Link Test | ${SITE.title}`}
+  description="Test page with a Stripe Payment Link button."
+>
+  <Header />
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-5 pb-4 sm:px-4">
+    <section class="payment-link-test">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1T4vJQGW9rKx2rW4gtPV8kWY"
+        publishable-key="pk_test_51B0f5eGW9rKx2rW4GVEuHeQvAljKZEgTmO4trADXg4h6rLBMqo3k6reNPptdsH7f8iGBEHnTAoNAgoUVR5FWlBxm00L03kP7Pl"
+      ></stripe-buy-button>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script async
+  src="https://js.stripe.com/v3/buy-button.js">
+</script>
+
+<style>
+  .payment-link-test {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 6rem auto 1.5rem;
+  }
+</style>
