@@ -45,6 +45,7 @@ const x401Request = {
 
 const x401RequestJson = JSON.stringify(x401Request, null, 2);
 const x401RequestBase64 = Buffer.from(x401RequestJson).toString("base64");
+const x401RequestMediaType = "application/ld+json;x401=proof-required";
 const x401RequestDataUri = `data:application/ld+json;x401=proof-required;base64,${x401RequestBase64}`;
 ---
 
@@ -77,7 +78,7 @@ const x401RequestDataUri = `data:application/ld+json;x401=proof-required;base64,
       style="display: none;"
       set:html={x401RequestJson}
     />
-    <data id="x401-request-data" hidden value={x401RequestDataUri}
+    <data id="x401-request-data" hidden value={x401RequestMediaType}
       >{x401RequestDataUri}</data
     >
   </main>
