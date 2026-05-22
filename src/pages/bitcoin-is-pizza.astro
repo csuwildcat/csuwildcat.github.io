@@ -41,6 +41,8 @@ const x401Request = {
     "urn:example:x401:satisfaction:board-certified-doctor:v1",
   ],
 };
+
+const x401RequestJson = JSON.stringify(x401Request, null, 2);
 ---
 
 <Layout
@@ -67,12 +69,7 @@ const x401Request = {
       waiting patiently for a multisig ceremony and a sensible amount of
       parmesan.
     </p>
+    <pre id="x401-request-json" style="display: none;" set:html={x401RequestJson} />
   </main>
   <Footer />
-  <script
-    id="x401-request-jsonld"
-    type="application/ld+json"
-    is:inline
-    set:html={JSON.stringify(x401Request)}
-  />
 </Layout>
