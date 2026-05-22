@@ -46,7 +46,7 @@ const x401Request = {
 <Layout
   title={`Bitcoin is Pizza | ${SITE.title}`}
   description="A one-off test page for a fictional Bitcoin pizza story."
-  structuredData={false}
+  structuredData={x401Request}
 >
   <Header />
   <main
@@ -69,10 +69,4 @@ const x401Request = {
     </p>
   </main>
   <Footer />
-  <script
-    id="x401-request-jsonld"
-    type="application/ld+json"
-    is:inline
-    set:html={JSON.stringify(x401Request)}
-  />
 </Layout>
