@@ -4,6 +4,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/config";
 import { Buffer } from "node:buffer";
+import { createHash } from "node:crypto";
 
 const x401Request = {
   "@context": "https://x401.id/spec/schemas/request",
@@ -45,8 +46,10 @@ const x401Request = {
 
 const x401RequestJson = JSON.stringify(x401Request, null, 2);
 const x401RequestBase64 = Buffer.from(x401RequestJson).toString("base64");
-const x401RequestMediaType = "application/ld+json;x401=proof-required";
 const x401RequestDataUri = `data:application/ld+json;x401=proof-required;base64,${x401RequestBase64}`;
+const x401RequestIntegrity = `sha256-${createHash("sha256")
+  .update(x401RequestDataUri)
+  .digest("hex")}`;
 ---
 
 <Layout
@@ -78,7 +81,7 @@ const x401RequestDataUri = `data:application/ld+json;x401=proof-required;base64,
       style="display: none;"
       set:html={x401RequestJson}
     />
-    <data id="x401-request-data" hidden value={x401RequestMediaType}
+    <data id="x401-request-data" hidden value={x401RequestIntegrity}
       >{x401RequestDataUri}</data
     >
   </main>
