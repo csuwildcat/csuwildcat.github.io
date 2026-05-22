@@ -14,7 +14,9 @@ I'm Daniel Buchner, a product leader, software engineer, and open source develop
 
 My career has taken me through some of the most influential technology companies, where I've had the opportunity to work on projects that shape how we interact with the digital world:
 
-**Gemini (current)** - Working on various products in the cryptocurrency and financial technology space, most notably Gemini's self-custodial, passkey-based wallet.
+**Proof (current)** - Director of Digital Assets, leading development of identity technologies and products for digital assets and AI.
+
+**Gemini** - Product and development lead for Gemini's self-custodial, passkey-based wallet.
 
 **Block (formerly Square)** - As Head of Decentralized Identity, I led initiatives to develop self-sovereign identity solutions that were designed to return control over personal data to individuals.
 
