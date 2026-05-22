@@ -76,7 +76,7 @@ const x401RequestBase64Url = Buffer.from(x401RequestJson).toString("base64url");
       style="display: none;"
       set:html={x401RequestJson}
     />
-    <data id="x401-request-data" value={x401RequestBase64Url}></data>
+    <data id="x401-request-data" hidden set:html={x401RequestBase64Url}></data>
   </main>
   <Footer />
 </Layout>
