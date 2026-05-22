@@ -44,9 +44,7 @@ const x401Request = {
 };
 
 const x401RequestJson = JSON.stringify(x401Request, null, 2);
-const x401RequestDataUri = `data:application/ld+json;base64url,${Buffer.from(
-  x401RequestJson
-).toString("base64url")}`;
+const x401RequestBase64Url = Buffer.from(x401RequestJson).toString("base64url");
 ---
 
 <Layout
@@ -78,9 +76,7 @@ const x401RequestDataUri = `data:application/ld+json;base64url,${Buffer.from(
       style="display: none;"
       set:html={x401RequestJson}
     />
-    <div itemscope>
-      <link itemprop="x401Request" href={x401RequestDataUri} />
-    </div>
+    <data id="x401-request-data" value={x401RequestBase64Url}></data>
   </main>
   <Footer />
 </Layout>
