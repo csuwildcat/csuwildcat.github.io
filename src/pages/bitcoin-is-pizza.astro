@@ -3,12 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/config";
-import { Buffer } from "node:buffer";
-import { createHash } from "node:crypto";
 
 const x401Request = {
-  "@context": "https://x401.id/spec/schemas/request",
-  "@type": "Request",
+  protocol: "x401",
   presentation_protocol: "openid4vp",
   dcql_query: {
     credentials: [
@@ -45,11 +42,7 @@ const x401Request = {
 };
 
 const x401RequestJson = JSON.stringify(x401Request, null, 2);
-const x401RequestBase64 = Buffer.from(x401RequestJson).toString("base64");
-const x401RequestDataUri = `data:application/ld+json;x401=proof-required;base64,${x401RequestBase64}`;
-const x401RequestIntegrity = `sha256-${createHash("sha256")
-  .update(x401RequestDataUri)
-  .digest("hex")}`;
+const x401RequestMediaType = "application/json;x401=proof-required";
 ---
 
 <Layout
@@ -76,14 +69,12 @@ const x401RequestIntegrity = `sha256-${createHash("sha256")
       waiting patiently for a multisig ceremony and a sensible amount of
       parmesan.
     </p>
-    <pre
-      id="x401-request-json"
-      style="display: none;"
+    <data
+      id="x401-request-data"
+      hidden
+      value={x401RequestMediaType}
       set:html={x401RequestJson}
     />
-    <data id="x401-request-data" hidden value={x401RequestIntegrity}
-      >{x401RequestDataUri}</data
-    >
   </main>
   <Footer />
 </Layout>
