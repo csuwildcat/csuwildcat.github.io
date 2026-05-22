@@ -12,7 +12,7 @@ I'm Daniel Buchner, a product leader, software engineer, and open source develop
 
 ## My Journey
 
-My career has taken me through some of the most influential technology companies, where I've had the opportunity to work on projects that shape how we interact with the digital world:
+My career has taken paths through influential tech companies at key times in the evolution of the Web, where I've had the opportunity to work on projects that shape how we interact with the digital world:
 
 **Proof (current)** - Director of Digital Assets, leading development of identity technologies and products for digital assets and AI.
 

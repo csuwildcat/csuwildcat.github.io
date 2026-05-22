@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/config";
+import { Buffer } from "node:buffer";
 
 const x401Request = {
   "@context": "https://x401.id/spec/schemas/request",
@@ -11,15 +12,15 @@ const x401Request = {
   dcql_query: {
     credentials: [
       {
-        id: "board_certification",
+        id: "university_degree",
         format: "jwt_vc_json",
         meta: {
-          type_values: ["BoardCertificationCredential"],
+          type_values: ["UniversityDegreeCredential"],
         },
         claims: [
           {
-            path: ["credentialSubject", "boardCertification", "status"],
-            values: ["active"],
+            path: ["credentialSubject", "degree", "type"],
+            values: ["BachelorDegree"],
           },
         ],
       },
@@ -34,15 +35,18 @@ const x401Request = {
   },
   issuers: {
     trust_establishment_url:
-      "https://research.example.com/.well-known/x401/trust/board-certified-doctor-v1",
+      "https://research.example.com/.well-known/x401/trust/university-degree-v1",
   },
-  request_id: "proof-template-board-certified-doctor-v1",
+  request_id: "proof-template-university-degree-v1",
   satisfied_requirements: [
-    "urn:example:x401:satisfaction:board-certified-doctor:v1",
+    "urn:example:x401:satisfaction:university-degree:v1",
   ],
 };
 
 const x401RequestJson = JSON.stringify(x401Request, null, 2);
+const x401RequestDataUri = `data:application/ld+json;base64url,${Buffer.from(
+  x401RequestJson
+).toString("base64url")}`;
 ---
 
 <Layout
@@ -74,6 +78,9 @@ const x401RequestJson = JSON.stringify(x401Request, null, 2);
       style="display: none;"
       set:html={x401RequestJson}
     />
+    <div itemscope>
+      <link itemprop="x401Request" href={x401RequestDataUri} />
+    </div>
   </main>
   <Footer />
 </Layout>
