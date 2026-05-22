@@ -1,13 +1,14 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 import { SITE } from "@/config";
 
 export const BLOG_PATH = "src/data/blog";
 
 const blog = defineCollection({
-  loader: glob({ 
-    pattern: "[^_]*.md", 
-    base: `./${BLOG_PATH}`
+  loader: glob({
+    pattern: "[^_]*.md",
+    base: `./${BLOG_PATH}`,
   }),
   schema: ({ image }) =>
     z.object({
